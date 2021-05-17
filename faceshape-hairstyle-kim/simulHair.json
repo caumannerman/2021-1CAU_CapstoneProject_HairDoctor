@@ -1,0 +1,41 @@
+
+{
+    "data":[
+        {
+            "category":"롱",
+            "hairImage":"https://hairdoctor.owlsogul.com/egg/Yoona/Yoona4.jpg",
+            "hairText":"레이어드 컷"
+        },
+        {
+            "category":"단발",
+            "hairImage":"https://hairdoctor.owlsogul.com/egg/Yoona/Yoona4.jpg",
+            "hairText":"C컬펌"
+        },
+        {
+            "category":"미디엄",
+            "hairImage":"https://hairdoctor.owlsogul.com/egg/Yoona/Yoona4.jpg",
+            "hairText":"중단발"
+        },
+        {
+            "category":"롱",
+            "hairImage":"https://hairdoctor.owlsogul.com/egg/Yoona/Yoona4.jpg",
+            "hairText":"긴생머리"
+        },
+        {
+            "category":"롱",
+            "hairImage":"https://hairdoctor.owlsogul.com/egg/Yoona/Yoona4.jpg",
+            "hairText":"웨이브 펌"
+        },
+        {
+            "category":"롱",
+            "hairImage":"https://hairdoctor.owlsogul.com/egg/Yoona/Yoona4.jpg",
+            "hairText":"히피 펌"
+        },
+        {
+            "category":"롱",
+            "hairImage":"https://hairdoctor.owlsogul.com/egg/Yoona/Yoona4.jpg",
+            "hairText":"s컬펌"
+        }
+
+    ]
+}

@@ -1,0 +1,35 @@
+{
+    "data":[
+        {
+            "idx":1,
+            "user_id":"005",
+            "username":"이하나",
+            "userFaceshape": "계란형",
+            "commentText":"너무 잘어울리세요,! 저도 시도해봐야겠네요!!"    
+        
+        },
+        {
+            "idx":2,
+            "user_id":"006",
+            "username":"이둘",
+            "userFaceshape": "계란형",
+            "commentText":"너무 잘어울리세요,! 저도 시도해봐야겠네요!!"
+        },
+        {
+            "idx":3,
+            "user_id":"007",
+            "username":"이셋",
+            "userFaceshape": "계란형",
+            "commentText":"너무 잘어울리세요,! 저도 시도해봐야겠네요!!"   
+        
+        },
+        {
+            "idx":4,
+            "user_id":"008",
+            "username":"이넷",
+            "userFaceshape": "계란형",
+            "commentText":"너무 잘어울리세요,! 저도 시도해봐야겠네요!!"   
+        
+        }
+    ]
+}

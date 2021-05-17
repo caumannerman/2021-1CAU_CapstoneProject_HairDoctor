@@ -1,0 +1,65 @@
+{
+    "data":[
+        {
+            "type":"egg",    
+            "hairDesc":"계란형은 어떤 헤어스타일도 다 잘 소화하는 편이에요, 갸름한 얼굴형을 더 부각시켜주고 싶다면 포니테일, 여성스럽고 세련된 느낌을 주고 싶다면 컬이 들어간 레이어드 s컬펌, 웨이브 단발 , 이쁜얼굴형을 잘드러내주는 올림머리(똥머리)를 추천해드릴게요~! ",
+            "recommandhairText1":"포니테일",
+            "recommandhairText2":"레이어드 s컬펌",
+            "recommandhairText3":"올림머리",
+            "recommandhairImage1":"https://hairdoctor.owlsogul.com/egg/yoona/윤아1.jpg",
+            "recommandhairImage2":"https://hairdoctor.owlsogul.com/egg/songjihyo/송지효2.jpg",
+            "recommandhairImage3":"https://hairdoctor.owlsogul.com/egg/songhyegyo/송혜교3.jpg"
+        },
+        {
+            "type":"peanut",    
+            "hairDesc":"땅콩형은 광대만큼 턱이 넓은 경우에 단점으로 부각될 수 있어요. 아예 머리를 묶어서 뒷머리 대비를 없애 주세요. 뒷머리 대비가 생기면, 시선이 아래쪽으로 내려가서 턱이 더 강조되기 때문이에요. 그리고 부드러운 인상을 연출하고 싶다면 웨이브 펌을 하여 인상을 부드럽게 보이는 것도 좋은 방법이에요",
+            "recommandhairText1":"묶음 머리",
+            "recommandhairText2":"웨이브 펌",
+            "recommandhairText3":"넘긴 머리",
+            "recommandhairImage1":"https://hairdoctor.owlsogul.com/peanut/kimhyeyoon/김혜윤1.jpg",
+            "recommandhairImage2":"https://hairdoctor.owlsogul.com/peanut/jungeunchae/정은채2.jpg",
+            "recommandhairImage3":"https://hairdoctor.owlsogul.com/peanut/jeonyeobeen/전여빈3.jpg"
+        },
+        {
+            "type":"round",    
+            "hairDesc":"디자인을 접근할 때 가로의 비율을 줄여주고 세로의 비율을 늘려주는 것으로 접근하면 얼굴이 갸름해 보일 수 있어요. 동그란 이미지의 귀여운 스타일을 하고 싶을 때는 앞머리가 있어도 괜찮지만, 만약 얼굴이 갸름해 보이는 연출을 하고 싶을 때는 얼굴의 들어간 부분의 볼륨을 맞춰주면 좀더 갸름해 보이는 효과가 있어요",
+            "recommandhairText1":"빌드 펌",
+            "recommandhairText2":"반 묶음",
+            "recommandhairText3":"긴 웨이브 펌",
+            "recommandhairImage1":"https://hairdoctor.owlsogul.com/round/ansohee/안소희1.jpg",
+            "recommandhairImage2":"https://hairdoctor.owlsogul.com/round/kimdami/김다미2.jpg",
+            "recommandhairImage3":"https://hairdoctor.owlsogul.com/round/yooa/유아3.jpg"
+        },
+        {
+            "type":"heart",    
+            "hairDesc":"하트형은 광대골격을 부드럽게 보완할 수 있는 스타일이 좋은데요, 웨이브 펌이 이떄 아주 제격이랍니다. 앞머리 볼륨은 화려한 웨이브보다는 굵은 웨이브가 좋아요. 하트형은 장발도 이쁘지만 단발도 아주 잘 어울리고, 가르마는 옆가르마(7:3)가 아주 잘어울려요!",
+            "recommandhairText1":"단발",
+            "recommandhairText2":"옆가르마",
+            "recommandhairText3":"웨이브 펌",
+            "recommandhairImage1":"https://hairdoctor.owlsogul.com/heart/esom/이솜1.jpg",
+            "recommandhairImage2":"https://hairdoctor.owlsogul.com/heart/leesungkyung/이성경2.jpg",
+            "recommandhairImage3":"https://hairdoctor.owlsogul.com/heart/ahnjiyeong/안지영3.jpg"
+        },
+        {
+            "type":"rhombus",
+            "hairDesc":"마름모형 얼굴은 풀뱅은 광대를 부각시키니 앞머리를 길러보시는 것을 추천드려요. 이때 고데기로 컬리 뱅을 연출하는 등 컬감을 넣어주며 광대를 덮을 만큼 충분히 길러주세요. 그리고 날카로워보이는 인상을 보완하고 싶다면 웨이브 펌을 하거나 시스루뱅으로 이마를 가려주면 인상이 한결 부드러워 보인답니다. ",
+            "recommandhairText1":"시스루뱅",
+            "recommandhairText2":"긴 앞머리",
+            "recommandhairText3":"웨이브 펌",
+            "recommandhairImage1":"https://hairdoctor.owlsogul.com/rhombus/gain/가인1.jpg",
+            "recommandhairImage2":"https://hairdoctor.owlsogul.com/rhombus/binnie/비니2.jpg",
+            "recommandhairImage3":"https://hairdoctor.owlsogul.com/rhombus/leesunbin/이선빈3.jpg"
+        },
+        {
+            "type":"hexagon",
+            "hairDesc":"육각형은 단발이 잘 어울리는 유형이라면 단발웨이브펌, 광대를 자연스럽게 커버하고싶다면 사이드뱅 앞머리, 광대를 보완하고 싶다면 스트레이트를 해서 얼굴 옆을 가려주는것도 얼굴이 각져보이는 효과를 줄여준답니다.",
+            "recommandhairText1":"단발 웨이브펌",
+            "recommandhairText2":"사이드뱅 앞머리",
+            "recommandhairText3":"스트레이트",
+            "recommandhairImage1":"https://hairdoctor.owlsogul.com/hexagon/hanyeseul/한예슬1.jpg",
+            "recommandhairImage2":"https://hairdoctor.owlsogul.com/hexagon/leesuhyun/이수현2.jpg",
+            "recommandhairImage3":"https://hairdoctor.owlsogul.com/hexagon/chunwoohee/천우희3.jpg"
+        }
+
+    ]
+}
