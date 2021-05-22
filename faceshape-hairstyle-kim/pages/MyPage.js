@@ -23,7 +23,7 @@ export default function MyPage({navigation,route}) {
 const [ID,setID] = useState("")
 
 //유저 정보를 가져오기 
-const [state,setState] = useState([])
+const [state,setState] = useState("")
 
 const myData= async () => {
     const id = JSON.parse(await AsyncStorage.getItem("user_id"))
@@ -39,16 +39,14 @@ const myData= async () => {
     const res = await axios.get('https://hairdoctor.owlsogul.com/mypage/setprofile', {
         params: { user_id: id } 
         })
-        setState(res.data.data)
-        console.log(res.data.data)
+        setState(res.data)
+        console.log(res.data)
     }
 
     //컨텐츠 새로고침,데이터 갱신
 const isFocused = useIsFocused()
 
-    useEffect(()=>{
-	   
-      
+    useEffect(()=>{ 
             if (isFocused) {
             myData();
             setReady(false)
@@ -56,8 +54,8 @@ const isFocused = useIsFocused()
        
       },[isFocused])
 
-      const name= state[0].nickname
-      const face= state[0].name
+      const name= state.nickname
+      const face= state.name
 
       return ready ? <Loading/> : (
     <View style={styles.container}>
