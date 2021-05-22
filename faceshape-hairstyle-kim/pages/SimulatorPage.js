@@ -1,14 +1,18 @@
 import React, { Component,useEffect,useRef,useState} from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Animated } from 'react-native';
-import  {PanGestureHandler,PinchGestureHandler} from 'react-native-gesture-handler'
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Animated, LogBox } from 'react-native';
+import  {PanGestureHandler,PinchGestureHandler,State} from 'react-native-gesture-handler'
 import image from "../images/image.png"
+import expand from "../images/expand.png"
 import userface from "../images/userface.png"
 import SimulHairCard from '../components/SimulHairCard';
 import data from '../simulHair.json';
 import { useIsFocused } from '@react-navigation/native';
+const tag ='[GESTURE]'
 
 export default function SimulatorPage ({navigation,route}) {
-
+    LogBox.ignoreAllLogs();
+ //헤어이미지 상태 
+ const [Hair,setHair] = useState("")
 
   //시뮬 헤어정보들을 저장하고 있을 상태
   const [state, setState] = useState([])
@@ -42,12 +46,13 @@ useEffect(()=>{
     }
  }
 
-    
  return img == undefined ? (
     <View style={styles.container}>
         <View style={styles.Showcontainer}>
             <View style={styles.userImageContainer}>  
                 <Image style={styles.userFaceImage} source={{uri:"https://previews.123rf.com/images/backwoodsicon/backwoodsicon2005/backwoodsicon200500329/148299034-healthy-skin-line-black-icon-beautiful-girl-isolated-vector-element-outline-pictogram-for-web-page-m.jpg"}}/>   
+               
+               
             </View>
                     
             <View style={styles.cateContainer}>
@@ -65,10 +70,19 @@ useEffect(()=>{
                             <TouchableOpacity style={styles.shortButton} onPress={()=>{category('단발')}}><Text style={styles.shortText}>단발</Text></TouchableOpacity>
                         </View>
                         <ScrollView horizontal indicatorStyle={"white"}>
-                             {/* 하나의 카드 영역을 나타내는 View */}
-                                {
+                           {/* 하나의 카드 영역을 나타내는 View */}
+                           {
                                 cateState.map((content,i)=>{
-                                    return (<SimulHairCard content={content} key={i}/>)
+                                    return (
+                                        <View key={i}>
+                                            <TouchableOpacity styles={styles.hair} onPress={() => {setHair(content.hairImage), console.log(content.hairImage)}}>
+                                                <View>
+                                                    <Image style={styles.hairImage} source={{uri:content.hairImage}}/>
+                                                    <Text style={styles.hairText}>{content.hairText}</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
                                 })
                                 }
                         </ScrollView>
@@ -85,6 +99,7 @@ useEffect(()=>{
         <View style={styles.Showcontainer}>
             <View style={styles.userImageContainer}>   
                 <Image style={styles.userFaceImage} source={{uri:img.image}}/>   
+               
             </View>
                     
             <View style={styles.cateContainer}>
@@ -103,9 +118,18 @@ useEffect(()=>{
                         </View>
                         <ScrollView horizontal indicatorStyle={"white"}>
                              {/* 하나의 카드 영역을 나타내는 View */}
-                                {
+                             {
                                 cateState.map((content,i)=>{
-                                    return (<SimulHairCard content={content} key={i}/>)
+                                    return (
+                                        <View key={i}>
+                                            <TouchableOpacity styles={styles.hair} onPress={() =>{setHair(content.hairImage), console.log(content.hairImage)}}>
+                                                <View>
+                                                    <Image style={styles.hairImage} source={{uri:content.hairImage}}/>
+                                                    <Text style={styles.hairText}>{content.hairText}</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
                                 })
                                 }
                         </ScrollView>
@@ -152,13 +176,13 @@ const styles = StyleSheet.create({
         borderRightColor:"#ffffff"
     },
    otherImageimage:{
-       marginTop:28,
+       marginTop:25,
        alignSelf:"center",
-        width: 25,
-        height: 25,
+        width: 30,
+        height: 30,
     },
     otherImageText:{
-        fontSize: 11,
+        fontSize: 12,
         textAlign: "center",
         color: "#2e3a59"
     },
@@ -225,10 +249,35 @@ const styles = StyleSheet.create({
     },
     shortText:{
         fontSize: 14,
-        
+        fontWeight:'bold',
         color: "#2e3a59",
         textAlign:"center",
         marginTop:5
-    }
+    },
+    hair:{
+        width: 72,
+        height: 72,
+        marginLeft:11,
+        marginTop:10
+    },
+    hairImage:{
+        backgroundColor:"#ffffff",
+        width: 70,
+        height: 70,
+        marginLeft:11,
+        marginTop:10
+    },
+    hairText:{
+        fontSize:12,
+        marginLeft:9,
+        marginTop:3,
+        textAlign:"center",
+        color:"#ffffff"
+    },
+    hairTrans:{
+        position : "absolute", right: 95, bottom: 140,width: 200,height: 260,alignSelf:'center',borderWidth:1,borderColor:"#FF0000"
+    },
+      wrapper: {
+        ...StyleSheet.absoluteFillObject,
+      },
 });
-
