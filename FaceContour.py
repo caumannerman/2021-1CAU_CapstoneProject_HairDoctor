@@ -50,7 +50,10 @@ def Get_dots_between_dotdot2(dot1,dot2,num_of_dots_to_get):
 
 #https://www.thepythoncode.com/article/contour-detection-opencv-python
 # 원본 color image
-image_ba = cv2.imread("hanye.jpeg")
+image_ba = cv2.imread("testImage4ContourDetection/10.png")
+
+
+
 
 
 #Change channel BGR to RGB
@@ -272,7 +275,7 @@ print(cv2.matchShapes(image_for_e_ima_gray,image_for_e_ima_gray,cv2.CONTOURS_MAT
 plt.subplot(111)
 plt.imshow(gray, cmap='gray')
 plt.title('gray scale')
-
+plt.show()
 ####################################################################################################
 #############################          threshold 지정해주는 부분          ##############################
 ####################################################################################################
@@ -282,8 +285,11 @@ plt.title('gray scale')
 
 learning_rate = 1
 loss = int(1e9)
+loss_2 = int(1e9)
 minimum_loss_contour = np.zeros_like(gray)
+minimum_loss_contour2 = np.zeros_like(gray)
 final_contour = []
+final_contour2 = []
 binary = []
 # 문턱값의 시작 값을 3번 점과 7번 점의 중간점의 픽셀값으로 설정
 #thres = gray[(dots17[2][0] + dots17[6][0]) //2][( dots17[2][1] + dots17[6][1]) // 2 ]
@@ -325,7 +331,7 @@ for i in range(254):
                 if contourIntersect(image, (landmarks.part(1).x, landmarks.part(1).y), (landmarks.part(6).x, landmarks.part(6).y), (landmarks.part(9).x, landmarks.part(9).y),(landmarks.part(12).x, landmarks.part(12).y), contour):
 
                     #해당 contour의 무게중심을 찍어줌
-                    cv2.circle(image, ( int(gravity_center_x), int(gravity_center_y) ), 3, (190, 110, 190), -1)
+                    #cv2.circle(image, ( int(gravity_center_x), int(gravity_center_y) ), 3, (190, 110, 190), -1)
                     # 무게중심과 8번(턱 중앙) 점과의 1:3내분점을 찍어줌 --> 17개 점으로
 
                     #cv2.drawContours(image, contour, -1, (0,255,0), 2)
@@ -333,7 +339,9 @@ for i in range(254):
                     now_face_contour = np.zeros_like(gray)
                     cv2.drawContours(now_face_contour, contour, -1, 255, 2)
 
-
+                   # plt.figure(figsize=(8,8))
+                    #plt.imshow(now_face_contour,cmap='gray')
+                    #plt.show()
 
 
 
@@ -341,11 +349,14 @@ for i in range(254):
                     loss2 = cv2.matchShapes(contour, poly_27_contour, cv2.CONTOURS_MATCH_I3, 0.0)
                     #print(loss1, loss2, "total = ", loss1 + loss2)
 
-                    if loss >  loss1  :
-                        loss = loss1
+                    if loss >  loss1 + loss2 :
+                        loss = loss1 + loss2
                         minimum_loss_contour = now_face_contour
                         final_contour = contour
-
+                    if loss_2 > loss1:
+                        loss_2 = loss1
+                        minimum_loss_contour2 = now_face_contour
+                        final_contour2 = contour
                     #plt.axis("off")
                     #plt.imshow(image)
                     #plt.show()
@@ -369,21 +380,29 @@ plt.imshow(gray, cmap='gray')
 plt.title("gray")
 
 plt.subplot(234)
-plt.imshow(binary, cmap='gray')
+plt.imshow(minimum_loss_contour2, cmap='gray')
 plt.title("binary")
 
 final_image = cv2.cvtColor(image_ba,cv2.COLOR_BGR2RGB)
-cv2.drawContours(final_image,final_contour,-1,(0,255,0),1)
 
-plt.subplot(235)
-plt.imshow(final_image)
+if cv2.contourArea(final_contour) > cv2.contourArea(final_contour2):
+
+    cv2.drawContours(final_image,final_contour,-1,(0,255,0),1)
+    plt.subplot(235)
+    plt.imshow(final_image)
+    plt.title("final")
+else:
+    cv2.drawContours(final_image, final_contour2, -1, (0, 255, 0), 1)
+    plt.subplot(235)
+    plt.imshow(final_image)
+    plt.title("final")
 
 plt.show()
 
-plt.figure(figsize=(8,8))
-plt.imshow(minimum_loss_contour, cmap='gray')
-plt.axis("off")
-plt.savefig("down2.jpg")
+#plt.figure(figsize=(8,8))
+#plt.imshow(final_image, cmap='gray')
+#plt.axis("off")
+#plt.savefig("down2.jpg")
 
 
 
