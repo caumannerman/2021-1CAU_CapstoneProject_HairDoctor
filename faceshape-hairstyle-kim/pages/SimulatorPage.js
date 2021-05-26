@@ -1,9 +1,9 @@
 import React, { Component,useEffect,useRef,useState} from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Animated, LogBox } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Animated, LogBox, Alert, Modal, Pressable } from 'react-native';
 import  {PanGestureHandler,PinchGestureHandler,State} from 'react-native-gesture-handler'
 import image from "../images/image.png"
-import expand from "../images/expand.png"
-import userface from "../images/userface.png"
+import size from "../images/size.png"
+import drag from "../images/drag.png"
 import SimulHairCard from '../components/SimulHairCard';
 import data from '../simulHair.json';
 import { useIsFocused } from '@react-navigation/native';
@@ -46,13 +46,52 @@ useEffect(()=>{
     }
  }
 
+    
+ const translateX = new Animated.Value(0)
+ const translateY = new Animated.Value(0)
+ 
+//
+ const lastOffset = { x: 0, y: 0};
+//
+
+   const handleGesture1 = Animated.event([{nativeEvent: {translationX: translateX,translationY:translateY}}], { useNativeDriver: true });
+
+    const _onHandlerStateChange = (event) => {
+        if (event.nativeEvent.oldState === State.ACTIVE) {
+         lastOffset.x += event.nativeEvent.translationX;
+         lastOffset.y += event.nativeEvent.translationY;
+         translateX.setOffset(lastOffset.x);
+         translateX.setValue(0);
+         translateY.setOffset(lastOffset.y);
+         translateY.setValue(0);
+        }
+      };
+
+    
+    let TransformStyle = {
+    transform:[
+        {
+            translateY : translateY
+        },
+        {
+            translateX : translateX
+        }
+    ]
+}
+
  return img == undefined ? (
     <View style={styles.container}>
+     
         <View style={styles.Showcontainer}>
-            <View style={styles.userImageContainer}>  
+            <View style={styles.userImageContainer}> 
                 <Image style={styles.userFaceImage} source={{uri:"https://previews.123rf.com/images/backwoodsicon/backwoodsicon2005/backwoodsicon200500329/148299034-healthy-skin-line-black-icon-beautiful-girl-isolated-vector-element-outline-pictogram-for-web-page-m.jpg"}}/>   
                
-               
+               {/* 헤어스타일에 대한 사진 클릭시 배경에 사진 띄우기*/}
+               <PanGestureHandler onGestureEvent={handleGesture1} onHandlerStateChange={_onHandlerStateChange}>
+                    
+                            <Animated.Image style={[styles.hairTrans,TransformStyle]}  source={{uri:Hair}}/>
+                    
+                </PanGestureHandler>
             </View>
                     
             <View style={styles.cateContainer}>
@@ -65,9 +104,9 @@ useEffect(()=>{
                 <View style={styles.hairContainer}>
                         <View style={styles.hairCate} horizontal indicatorStyle={"white"}>
                             <TouchableOpacity style={styles.allButton} onPress={()=>{category('전체보기')}}><Text style={styles.allText}>전체보기</Text></TouchableOpacity>
-                            <TouchableOpacity style={styles.longButton} onPress={()=>{category('롱')}}><Text style={styles.longText}>롱</Text></TouchableOpacity>
-                            <TouchableOpacity style={styles.mediumButton} onPress={()=>{category('미디엄')}}><Text style={styles.mediumText}>미디엄</Text></TouchableOpacity>
-                            <TouchableOpacity style={styles.shortButton} onPress={()=>{category('단발')}}><Text style={styles.shortText}>단발</Text></TouchableOpacity>
+                            <TouchableOpacity style={styles.longButton} onPress={()=>{category('long')}}><Text style={styles.longText}>롱</Text></TouchableOpacity>
+                            <TouchableOpacity style={styles.mediumButton} onPress={()=>{category('midi')}}><Text style={styles.mediumText}>미디엄</Text></TouchableOpacity>
+                            <TouchableOpacity style={styles.shortButton} onPress={()=>{category('short')}}><Text style={styles.shortText}>단발</Text></TouchableOpacity>
                         </View>
                         <ScrollView horizontal indicatorStyle={"white"}>
                            {/* 하나의 카드 영역을 나타내는 View */}
@@ -96,14 +135,21 @@ useEffect(()=>{
   :
   (
     <View style={styles.container}>
+
         <View style={styles.Showcontainer}>
             <View style={styles.userImageContainer}>   
-                <Image style={styles.userFaceImage} source={{uri:img.image}}/>   
-               
+              <Image style={styles.userFaceImage} source={{uri:img.image}}/>   
+               {/* 헤어스타일에 대한 사진 클릭시 배경에 사진 띄우기*/}
+               <PanGestureHandler onGestureEvent={handleGesture1} onHandlerStateChange={_onHandlerStateChange}>
+                    
+                            <Animated.Image style={[styles.hairTrans,TransformStyle]}  source={{uri:Hair}}/>
+                        
+                </PanGestureHandler>
             </View>
                     
             <View style={styles.cateContainer}>
                 <View style={styles.otherImageContainer}>
+                    
                     <TouchableOpacity onPress={() => navigation.navigate('SimulCamera')}>
                     <Image style={styles.otherImageimage} source={image}/>
                     <Text style={styles.otherImageText}>다른 사진</Text>
@@ -112,9 +158,9 @@ useEffect(()=>{
                 <View style={styles.hairContainer}>
                         <View style={styles.hairCate} horizontal indicatorStyle={"white"}>
                             <TouchableOpacity style={styles.allButton} onPress={()=>{category('전체보기')}}><Text style={styles.allText}>전체보기</Text></TouchableOpacity>
-                            <TouchableOpacity style={styles.longButton} onPress={()=>{category('롱')}}><Text style={styles.longText}>롱</Text></TouchableOpacity>
-                            <TouchableOpacity style={styles.mediumButton} onPress={()=>{category('미디엄')}}><Text style={styles.mediumText}>미디엄</Text></TouchableOpacity>
-                            <TouchableOpacity style={styles.shortButton} onPress={()=>{category('단발')}}><Text style={styles.shortText}>단발</Text></TouchableOpacity>
+                            <TouchableOpacity style={styles.longButton} onPress={()=>{category('long')}}><Text style={styles.longText}>롱</Text></TouchableOpacity>
+                            <TouchableOpacity style={styles.mediumButton} onPress={()=>{category('midi')}}><Text style={styles.mediumText}>미디엄</Text></TouchableOpacity>
+                            <TouchableOpacity style={styles.shortButton} onPress={()=>{category('short')}}><Text style={styles.shortText}>단발</Text></TouchableOpacity>
                         </View>
                         <ScrollView horizontal indicatorStyle={"white"}>
                              {/* 하나의 카드 영역을 나타내는 View */}
@@ -176,12 +222,13 @@ const styles = StyleSheet.create({
         borderRightColor:"#ffffff"
     },
    otherImageimage:{
-       marginTop:25,
+       marginTop:43,
        alignSelf:"center",
         width: 30,
         height: 30,
     },
     otherImageText:{
+        marginTop:5,
         fontSize: 12,
         textAlign: "center",
         color: "#2e3a59"
@@ -199,7 +246,7 @@ const styles = StyleSheet.create({
         width: 63,
         height: 28,
         marginLeft:9,
-        marginTop:10
+        marginTop:8
     },
     longButton:{
         backgroundColor:"#F6F6F6",
@@ -207,7 +254,7 @@ const styles = StyleSheet.create({
         width: 63,
         height: 28,
         marginLeft:9,
-        marginTop:10
+        marginTop:8
     },
     mediumButton:{
         backgroundColor:"#F6F6F6",
@@ -215,7 +262,7 @@ const styles = StyleSheet.create({
         width: 63,
         height: 28,
         marginLeft:9,
-        marginTop:10
+        marginTop:8
     },
     shortButton:{
         backgroundColor:"#F6F6F6",
@@ -223,7 +270,7 @@ const styles = StyleSheet.create({
         width: 63,
         height: 28,
         marginLeft:9,
-        marginTop:10
+        marginTop:8
         
     },
     allText:{
@@ -258,15 +305,17 @@ const styles = StyleSheet.create({
         width: 72,
         height: 72,
         marginLeft:11,
-        marginTop:10
+        marginTop:7
     },
     hairImage:{
         backgroundColor:"#ffffff",
-        width: 70,
-        height: 70,
+        width: 68,
+        height: 68,
         marginLeft:11,
-        marginTop:10
+        marginTop:7
     },
+    hairImage1:{marginLeft:8},
+    hairImage2:{},
     hairText:{
         fontSize:12,
         marginLeft:9,
@@ -275,9 +324,47 @@ const styles = StyleSheet.create({
         color:"#ffffff"
     },
     hairTrans:{
-        position : "absolute", right: 95, bottom: 140,width: 200,height: 260,alignSelf:'center',borderWidth:1,borderColor:"#FF0000"
+        position : "absolute", right: 30, bottom:20 , width: 300, height: 400, alignSelf:'center', borderWidth:1, borderColor:"#FF0000"
     },
       wrapper: {
         ...StyleSheet.absoluteFillObject,
       },
+      modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+      },
+      button: {
+        width:180,
+        marginTop:10,
+        alignSelf:"center",
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2
+      },
+      buttonOpen: {
+        backgroundColor: "#F194FF",
+      },
+      buttonClose: {
+        backgroundColor: "#2196F3",
+      },
+      textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+      },
+      modalText: {
+        marginBottom: 15,
+        textAlign: "center"
+      }
 });
