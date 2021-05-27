@@ -173,6 +173,17 @@ def Draw_Ellipse_Magnified_based_on_CenterGravity(target_image,nparray,ratio):
     # 내부를 채워서 그림.
     cv2.ellipse(target_image, el, 0, -1)
 
+# contour를 받아 contour를 return해줌
+# contour는 shape을 (a,1,2) 형태로 가짐.
+
+def Magnify_conotur_based_on_CenterGravity(contour,ratio):
+    temp = np.mean(contour, axis=0)
+    temp2 = np.tile(temp, (contour.shape[0], 1)).reshape(contour.shape[0], 1, 2)
+    magnified_contour = np.rint(temp2 + (contour - temp2) * ratio)
+    magnified_contour = magnified_contour.astype('int64')
+
+    return magnified_contour
+
 ##################################### 얼굴 shift mask를 칠해주는 곳#######################################
 temp = np.tile(np.array((dot27_center_x,dot27_center_y)), (27,1)).reshape(27,1,2)
 # 가장 가까운 정수로 바꿔주는 rint
@@ -230,13 +241,14 @@ cv2.ellipse(image_for_e_ima_gray, ellipse_ima, 255,1)
 
 ell_contours2, _ = cv2.findContours(image_for_e_ima_gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 ell_contour2 = ell_contours2[0]
+print(ell_contour2.shape, "hhhheheheheheh")
 
 #---------------- 세 번쨰 도형  볼록 다각형--------------  -------------------------------
 poly_by_27dots = np.zeros_like(gray)
 poly_by_27dots = cv2.polylines(poly_by_27dots, [dots_ima],True,255,1)
 poly_27_contours, _ = cv2.findContours(poly_by_27dots, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 poly_27_contour = poly_27_contours[0]
-
+print(poly_27_contour.shape, "hhhheheheheheh")
 
 # ---------------- 네 번쨰 도형  혼합 도형 --------------  -------------------------------
 new_poly = np.zeros_like(gray)
@@ -251,9 +263,11 @@ new_poly[:dot15_y,dot8_x:] = image_for_e_gray[:dot15_y,dot8_x:]
 
 new_poly_contours, _ = cv2.findContours(new_poly, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 new_poly_contour = new_poly_contours[0]
+print(new_poly_contour.shape, "hhhheheheheheh")
 
+new_poly_contour = Magnify_based_on_CenterGravity(new_poly_contour, 1.04)
 testpo = np.zeros_like(gray)
-cv2.drawContours(testpo, new_poly_contour, -1, 255, 1)
+cv2.drawContours(image_ba, new_poly_contour, -1, 255, 1)
 
 #----------------------- 만든 도형들 확인  --------------  -------------------------------
 plt.figure(figsize = (12,12))
@@ -277,7 +291,7 @@ plt.subplot(121)
 plt.imshow(new_poly, cmap='gray')
 
 plt.subplot(122)
-plt.imshow(testpo,cmap='gray')
+plt.imshow(image_ba)
 plt.show()
 
 ############################################################################################################
