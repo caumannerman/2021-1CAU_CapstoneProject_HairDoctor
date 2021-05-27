@@ -50,7 +50,7 @@ def Get_dots_between_dotdot2(dot1,dot2,num_of_dots_to_get):
 
 #https://www.thepythoncode.com/article/contour-detection-opencv-python
 # 원본 color image
-image_ba = cv2.imread("testImage4ContourDetection/10.png")
+image_ba = cv2.imread("testImage4ContourDetection/1.jpeg")
 
 
 
@@ -91,6 +91,9 @@ dots_all = np.empty((0,2),int)
 dot27_center_x = 0
 dot27_center_y = 0
 
+# new_poly를 만들 떄 사용할 0번, 16, 27번 (미간), 턱중앙 8
+dot1_x, dot1_y, dot15_x, dot15_y, dot27_x, dot27_y, dot8_x, dot8_y = 0,0,0,0,0,0,0,0
+
 for face in faces:
     x1 = face.left()
     y1 = face.top()
@@ -105,8 +108,12 @@ for face in faces:
     landmarks = predictor(gray, face)
     # print(landmarks)
 
+    # new_poly에 사용할 점들 위치정보 초기화
+    dot1_x, dot1_y = landmarks.part(1).x, landmarks.part(1).y
+    dot15_x, dot15_y = landmarks.part(15).x, landmarks.part(15).y
+    dot27_x, dot27_y = landmarks.part(27).x, landmarks.part(27).y
+    dot8_x, dot8_y = landmarks.part(8).x, landmarks.part(8).y
     # 우리에게 필요한건 0번~ 16번 총 17개의 윤곽 점  9번이 턱 중간
-
     for n in range(0, 67):
         x = landmarks.part(n).x
         y = landmarks.part(n).y
@@ -127,11 +134,15 @@ for face in faces:
             elif n <= 26:
                 dots_ima = np.append(dots_ima, np.array([(((x, y)))]), axis=0)
 
-            cv2.circle(image, (x, y), 3, (255, 0, 0), -1)
+
+        cv2.circle(image, (x, y), 3, (255, 0, 0), -1)
 
 
     dot27_center_x /= 27
     dot27_center_y /= 27
+
+# new_poly에 사용할
+new_face_top_center_x, new_face_top_center_y = dot8_x + int(1.7*(dot27_x - dot8_x) ) , dot8_y + int(1.7*(dot27_y - dot8_y))
 
 
 
@@ -142,6 +153,8 @@ dots_ima = np.array(dots_ima).reshape(10,1,2)
 dots_ima = np.append(dots_17,dots_ima).reshape(27,1,2)
 
 dots_all = dots_all.reshape(67,1,2)
+
+dots_17 = np.append(dots_17, np.array([[[new_face_top_center_x, new_face_top_center_y]]]) , axis = 0)
 
 def Magnify_based_on_CenterGravity(nparray,ratio):
     temp = np.mean(nparray,axis=0)
@@ -206,6 +219,8 @@ cv2.ellipse(image_for_e_gray, ellipse, 255,1)
 ell_contours, _ = cv2.findContours(image_for_e_gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 ell_contour = ell_contours[0]
 
+
+#----------------두 번쨰 도형  작은 타원 -------------------------------
 ellipse_ima = cv2.fitEllipse(dots_ima)
 #image_for_e_ima = np.zeros_like(image)
 image_for_e_ima_gray = np.zeros_like(gray)
@@ -216,12 +231,31 @@ cv2.ellipse(image_for_e_ima_gray, ellipse_ima, 255,1)
 ell_contours2, _ = cv2.findContours(image_for_e_ima_gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 ell_contour2 = ell_contours2[0]
 
-
+#---------------- 세 번쨰 도형  볼록 다각형--------------  -------------------------------
 poly_by_27dots = np.zeros_like(gray)
 poly_by_27dots = cv2.polylines(poly_by_27dots, [dots_ima],True,255,1)
 poly_27_contours, _ = cv2.findContours(poly_by_27dots, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 poly_27_contour = poly_27_contours[0]
 
+
+# ---------------- 네 번쨰 도형  혼합 도형 --------------  -------------------------------
+new_poly = np.zeros_like(gray)
+#왼쪽 아래
+new_poly[dot1_y:,:dot8_x] = poly_by_27dots[dot1_y:,:dot8_x]
+#왼쪽 위
+new_poly[:dot1_y,:dot8_x] = image_for_e_gray[:dot1_y,:dot8_x]
+# 오른쪽 아래
+new_poly[dot15_y:,dot8_x:] = poly_by_27dots[dot15_y:,dot8_x:]
+# 오른쪽 위
+new_poly[:dot15_y,dot8_x:] = image_for_e_gray[:dot15_y,dot8_x:]
+
+new_poly_contours, _ = cv2.findContours(new_poly, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+new_poly_contour = new_poly_contours[0]
+
+testpo = np.zeros_like(gray)
+cv2.drawContours(testpo, new_poly_contour, -1, 255, 1)
+
+#----------------------- 만든 도형들 확인  --------------  -------------------------------
 plt.figure(figsize = (12,12))
 plt.subplot(141)
 
@@ -236,8 +270,17 @@ plt.imshow(image_for_e_ima_gray,cmap='gray')
 plt.subplot(144)
 plt.imshow(poly_by_27dots,cmap='gray')
 plt.show()
+############################################################################################################
 
+plt.figure(figsize = (8,8))
+plt.subplot(121)
+plt.imshow(new_poly, cmap='gray')
 
+plt.subplot(122)
+plt.imshow(testpo,cmap='gray')
+plt.show()
+
+############################################################################################################
 
 #image_for_e_gray = cv2.cvtColor(image_for_e, cv2.COLOR_RGB2GRAY)
 #image_for_e_ima_gray = cv2.cvtColor(image_for_e_ima, cv2.COLOR_RGB2GRAY)
@@ -307,6 +350,7 @@ for i in range(254):
     # find the contours from the thresholded image
     contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
+    #contours, hierarchy = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     ####################################################################################################
     #############################          threshold 지정해주는 부분          ##############################
     ####################################################################################################
