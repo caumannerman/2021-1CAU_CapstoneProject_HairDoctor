@@ -329,10 +329,13 @@ plt.show()
 learning_rate = 1
 loss = int(1e9)
 loss_2 = int(1e9)
+loss_3 = int(1e9)
 minimum_loss_contour = np.zeros_like(gray)
 minimum_loss_contour2 = np.zeros_like(gray)
+minimum_loss_contour3 = np.zeros_like(gray)
 final_contour = []
 final_contour2 = []
+final_contour3 = []
 binary = []
 # 문턱값의 시작 값을 3번 점과 7번 점의 중간점의 픽셀값으로 설정
 #thres = gray[(dots17[2][0] + dots17[6][0]) //2][( dots17[2][1] + dots17[6][1]) // 2 ]
@@ -391,6 +394,7 @@ for i in range(254):
 
                     loss1 = cv2.matchShapes(contour, ell_contour, cv2.CONTOURS_MATCH_I3, 0.0)
                     loss2 = cv2.matchShapes(contour, poly_27_contour, cv2.CONTOURS_MATCH_I3, 0.0)
+                    loss3 = cv2.matchShapes(contour, new_poly_contour, cv2.CONTOURS_MATCH_I3, 0.0)
                     #print(loss1, loss2, "total = ", loss1 + loss2)
 
                     if loss >  loss1 + loss2 :
@@ -401,6 +405,10 @@ for i in range(254):
                         loss_2 = loss1
                         minimum_loss_contour2 = now_face_contour
                         final_contour2 = contour
+                    if loss_3 > loss3:
+                        loss_3 = loss3
+                        minimum_loss_contour3 = now_face_contour
+                        final_contour3 = contour
                     #plt.axis("off")
                     #plt.imshow(image)
                     #plt.show()
@@ -417,7 +425,7 @@ plt.title('result')
 
 plt.subplot(232)
 plt.imshow(minimum_loss_contour, cmap='gray')
-plt.title("final_contour")
+plt.title("final_contour by loss1")
 
 plt.subplot(233)
 plt.imshow(gray, cmap='gray')
@@ -425,19 +433,23 @@ plt.title("gray")
 
 plt.subplot(234)
 plt.imshow(minimum_loss_contour2, cmap='gray')
-plt.title("binary")
+plt.title("final_contour by loss2")
+
+plt.subplot(235)
+plt.imshow(minimum_loss_contour3, cmap='gray')
+plt.title("final_contour by loss3")
 
 final_image = cv2.cvtColor(image_ba,cv2.COLOR_BGR2RGB)
 
 if cv2.contourArea(final_contour) > cv2.contourArea(final_contour2):
 
     cv2.drawContours(final_image,final_contour,-1,(0,255,0),1)
-    plt.subplot(235)
+    plt.subplot(236)
     plt.imshow(final_image)
     plt.title("final")
 else:
     cv2.drawContours(final_image, final_contour2, -1, (0, 255, 0), 1)
-    plt.subplot(235)
+    plt.subplot(236)
     plt.imshow(final_image)
     plt.title("final")
 
