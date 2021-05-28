@@ -48,9 +48,9 @@ def Get_dots_between_dotdot2(dot1,dot2,num_of_dots_to_get):
     new_dot1_y = dot1[1] + inter_y
     return Get_dots_between_dotdot((new_dot1_x,new_dot1_y), dot2, num_of_dots_to_get)
 
-#https://www.thepythoncode.com/article/contour-detection-opencv-python
+
 # 원본 color image
-image_ba = cv2.imread("testImage4ContourDetection/10.png")
+image_ba = cv2.imread("testImage4ContourDetection/.jpeg")
 
 
 
