@@ -50,7 +50,7 @@ def Get_dots_between_dotdot2(dot1,dot2,num_of_dots_to_get):
 
 #https://www.thepythoncode.com/article/contour-detection-opencv-python
 # 원본 color image
-image_ba = cv2.imread("testImage4ContourDetection/1.jpeg")
+image_ba = cv2.imread("testImage4ContourDetection/7.png")
 
 
 
@@ -109,8 +109,8 @@ for face in faces:
     # print(landmarks)
 
     # new_poly에 사용할 점들 위치정보 초기화
-    dot1_x, dot1_y = landmarks.part(1).x, landmarks.part(1).y
-    dot15_x, dot15_y = landmarks.part(15).x, landmarks.part(15).y
+    dot0_x, dot0_y = landmarks.part(0).x, landmarks.part(0).y
+    dot16_x, dot16_y = landmarks.part(16).x, landmarks.part(16).y
     dot27_x, dot27_y = landmarks.part(27).x, landmarks.part(27).y
     dot8_x, dot8_y = landmarks.part(8).x, landmarks.part(8).y
     # 우리에게 필요한건 0번~ 16번 총 17개의 윤곽 점  9번이 턱 중간
@@ -183,6 +183,44 @@ def Magnify_conotur_based_on_CenterGravity(contour,ratio):
     magnified_contour = magnified_contour.astype('int64')
 
     return magnified_contour
+# 두 개의 contour가 그려진 np.array를 input받아, 두 contour의 교점 중, 좌측에서 가장 높이있는 점, 우측에서 가장 높이 있는 점을 return해줌
+# #######contour1을 하관에 사용할 것, contour2를 얼굴 상부에 사용할 것이다.
+def Intersect_dot_left_right_top( contarr_ori1 ,contarr_ori2, dot0_x, dot0_y, dot16_x, dot16_y, dot8_x, dot8_y):
+
+    # 27dot으로 만든 contour의 아랫부분만 남
+    contarr1 = copy.deepcopy(contarr_ori1)
+    # 타원을 그대로 복사
+    contarr2 = copy.deepcopy(contarr_ori2)
+
+    # 왼쪽 위
+    contarr1[:dot0_y, :dot8_x] = 0
+    # 오른쪽 위
+    contarr1[:dot16_y, dot8_x:] = 0
+    #교점을 np.logical_any로 가져옴
+    result = np.logical_and(contarr1, contarr2)
+    left_top_x, left_top_y = 0,0
+    right_top_x, right_top_y = 0,0
+    for i in range(result[:,:dot8_x].shape[0]):
+        if np.any(result[:,:dot8_x][i]):
+            left_top_x = i
+            break
+    for i in range(dot8_x):
+        if result[:,:dot8_x][left_top_x][i] != 0:
+            left_top_y = i
+    for i in range(result[:,dot8_x:].shape[0]):
+        if np.any(result[:,dot8_x:][i]):
+            right_top_x = i
+            break
+    for i in range(dot8_x,contarr1.shape[1]):
+        if result[:,dot8_x:][right_top_x][i] != 0:
+            right_top_y = i
+    return left_top_x, left_top_y, right_top_x, right_top_y
+
+
+
+
+
+
 
 ##################################### 얼굴 shift mask를 칠해주는 곳#######################################
 temp = np.tile(np.array((dot27_center_x,dot27_center_y)), (27,1)).reshape(27,1,2)
@@ -253,19 +291,20 @@ print(poly_27_contour.shape, "hhhheheheheheh")
 # ---------------- 네 번쨰 도형  혼합 도형 --------------  -------------------------------
 new_poly = np.zeros_like(gray)
 #왼쪽 아래
-new_poly[dot1_y:,:dot8_x] = poly_by_27dots[dot1_y:,:dot8_x]
+new_poly[dot0_y:,:dot8_x] = poly_by_27dots[dot0_y:,:dot8_x]
 #왼쪽 위
-new_poly[:dot1_y,:dot8_x] = image_for_e_gray[:dot1_y,:dot8_x]
+new_poly[:dot0_y,:dot8_x] = image_for_e_gray[:dot0_y,:dot8_x]
 # 오른쪽 아래
-new_poly[dot15_y:,dot8_x:] = poly_by_27dots[dot15_y:,dot8_x:]
+new_poly[dot16_y:,dot8_x:] = poly_by_27dots[dot16_y:,dot8_x:]
 # 오른쪽 위
-new_poly[:dot15_y,dot8_x:] = image_for_e_gray[:dot15_y,dot8_x:]
+new_poly[:dot16_y,dot8_x:] = image_for_e_gray[:dot16_y,dot8_x:]
 
 new_poly_contours, _ = cv2.findContours(new_poly, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 new_poly_contour = new_poly_contours[0]
 print(new_poly_contour.shape, "hhhheheheheheh")
 
-new_poly_contour = Magnify_based_on_CenterGravity(new_poly_contour, 1.04)
+# 1.05배 키워서 적
+new_poly_contour = Magnify_based_on_CenterGravity(new_poly_contour, 1.05)
 testpo = np.zeros_like(gray)
 cv2.drawContours(image_ba, new_poly_contour, -1, 255, 1)
 
@@ -286,6 +325,7 @@ plt.imshow(poly_by_27dots,cmap='gray')
 plt.show()
 ############################################################################################################
 
+# 새롭게 만든 도형 Plot 하는 부분
 plt.figure(figsize = (8,8))
 plt.subplot(121)
 plt.imshow(new_poly, cmap='gray')
@@ -294,6 +334,7 @@ plt.subplot(122)
 plt.imshow(image_ba)
 plt.show()
 
+exit()
 ############################################################################################################
 
 #image_for_e_gray = cv2.cvtColor(image_for_e, cv2.COLOR_RGB2GRAY)
