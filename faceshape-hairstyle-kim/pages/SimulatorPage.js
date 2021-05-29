@@ -1,9 +1,9 @@
 import React, { Component,useEffect,useRef,useState} from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Animated, LogBox, Alert, Modal, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Animated, LogBox } from 'react-native';
 import  {PanGestureHandler,PinchGestureHandler,State} from 'react-native-gesture-handler'
 import image from "../images/image.png"
-import size from "../images/size.png"
-import drag from "../images/drag.png"
+import expand from "../images/expand.png"
+import userface from "../images/userface.png"
 import SimulHairCard from '../components/SimulHairCard';
 import data from '../simulHair.json';
 import { useIsFocused } from '@react-navigation/native';
@@ -11,86 +11,97 @@ const tag ='[GESTURE]'
 
 export default function SimulatorPage ({navigation,route}) {
     LogBox.ignoreAllLogs();
- //헤어이미지 상태 
- const [Hair,setHair] = useState("")
+    //헤어이미지 상태 
+    const [Hair,setHair] = useState("")
 
-  //시뮬 헤어정보들을 저장하고 있을 상태
-  const [state, setState] = useState([])
+    //시뮬 헤어정보들을 저장하고 있을 상태
+    const [state, setState] = useState([])
 
-//헤어 카테고리에 따라 다른 헤어정보들을 저장하고 있을 상태
-const [cateState,setCateState] = useState([])
+    //헤어 카테고리에 따라 다른 헤어정보들을 저장하고 있을 상태
+    const [cateState,setCateState] = useState([])
 
-// 추가된 이미지 상태
-const [img,setImg] = useState({ "image":"https://pbs.twimg.com/profile_images/1193436004436201472/G8Do6f1u.jpg"})
-//컨텐츠 새로고침,데이터 갱신
-const isFocused = useIsFocused()
+    // 추가된 이미지 상태
+    const [img,setImg] = useState({ "image":"https://pbs.twimg.com/profile_images/1193436004436201472/G8Do6f1u.jpg"})
+    //컨텐츠 새로고침,데이터 갱신
+    const isFocused = useIsFocused()
 
-useEffect(()=>{
-    if (isFocused) {
+    useEffect(()=>{
+        if (isFocused) {
         // do something with params
-    setImg(route.params)
-    let hairdata = data.data;
-    setState(hairdata)
-    setCateState(hairdata)
-} 
-}, [isFocused])
+        setImg(route.params)
+        let hairdata = data.data;
+        setState(hairdata)
+        setCateState(hairdata)
+        } 
+    }, [isFocused])
 
-  const category = (cate) => {
-    if(cate == "전체보기"){
+    const category = (cate) => {
+        if(cate == "전체보기"){
         //전체보기면 원래 꿀팁 데이터를 담고 있는 상태값으로 다시 초기화
-        setCateState(state)
-    }else{
-        setCateState(state.filter((d)=>{
-        return d.category == cate
-        }))
+            setCateState(state)
+        } else{
+            setCateState(state.filter((d)=>{
+            return d.category == cate
+            }))
+        }
     }
- }
 
     
- const translateX = new Animated.Value(0)
- const translateY = new Animated.Value(0)
- 
-//
- const lastOffset = { x: 0, y: 0};
-//
+    const translateX = new Animated.Value(0)
+    const translateY = new Animated.Value(0)
 
-   const handleGesture1 = Animated.event([{nativeEvent: {translationX: translateX,translationY:translateY}}], { useNativeDriver: true });
+    const basescale = new Animated.Value(1)
+    const pinchscale = new Animated.Value(1)
+    const scale  = Animated.multiply(basescale, pinchscale)
+    let lastscale = 1
+    const lastOffset = { x: 0, y: 0};
+
+    const handleGesture1 = Animated.event([{nativeEvent: {translationX: translateX, translationY:translateY}}], { useNativeDriver: true });
+    const handleGesture2 = Animated.event([{nativeEvent: {scale:pinchscale}}], { useNativeDriver: true });
+  
+    const _onGestureStateChange = (event)=>{
+        //console.log(tag,event.nativeEvent)
+        if (event.nativeEvent.oldState === State.ACTIVE) {        
+            lastscale *= event.nativeEvent.scale;
+            basescale.setValue(lastscale);
+            pinchscale.setValue(1);
+        }
+    }
 
     const _onHandlerStateChange = (event) => {
         if (event.nativeEvent.oldState === State.ACTIVE) {
-         lastOffset.x += event.nativeEvent.translationX;
-         lastOffset.y += event.nativeEvent.translationY;
-         translateX.setOffset(lastOffset.x);
-         translateX.setValue(0);
-         translateY.setOffset(lastOffset.y);
-         translateY.setValue(0);
+            lastOffset.x += event.nativeEvent.translationX;
+            lastOffset.y += event.nativeEvent.translationY;
+            translateX.setOffset(lastOffset.x);
+            translateX.setValue(0);
+            translateY.setOffset(lastOffset.y);
+            translateY.setValue(0);
         }
-      };
+    };
 
+    //console.log(tag,scale)
     
     let TransformStyle = {
-    transform:[
-        {
-            translateY : translateY
-        },
-        {
-            translateX : translateX
-        }
-    ]
-}
-
- return img == undefined ? (
-    <View style={styles.container}>
-     
-        <View style={styles.Showcontainer}>
-            <View style={styles.userImageContainer}> 
-                <Image style={styles.userFaceImage} source={{uri:"https://previews.123rf.com/images/backwoodsicon/backwoodsicon2005/backwoodsicon200500329/148299034-healthy-skin-line-black-icon-beautiful-girl-isolated-vector-element-outline-pictogram-for-web-page-m.jpg"}}/>   
+        transform:[
+            { perspective: 200 },
+            { scale: scale },
+            { translateY : translateY },
+            { translateX : translateX }
+        ]
+    }
+    return img == undefined ? (
+        <View style={styles.container}>
+            <View style={styles.Showcontainer}>
+                <View style={styles.userImageContainer}>  
+                    <Image style={styles.userFaceImage} source={{uri:"https://previews.123rf.com/images/backwoodsicon/backwoodsicon2005/backwoodsicon200500329/148299034-healthy-skin-line-black-icon-beautiful-girl-isolated-vector-element-outline-pictogram-for-web-page-m.jpg"}}/>   
                
-               {/* 헤어스타일에 대한 사진 클릭시 배경에 사진 띄우기*/}
-               <PanGestureHandler onGestureEvent={handleGesture1} onHandlerStateChange={_onHandlerStateChange}>
-                    
+                {/* 헤어스타일에 대한 사진 클릭시 배경에 사진 띄우기*/}
+                <PanGestureHandler onGestureEvent={handleGesture1} onHandlerStateChange={_onHandlerStateChange}>
+                    <Animated.View style={styles.wrapper}>
+                        <PinchGestureHandler onGestureEvent={handleGesture2} onHandlerStateChange={_onGestureStateChange}>
                             <Animated.Image style={[styles.hairTrans,TransformStyle]}  source={{uri:Hair}}/>
-                    
+                        </PinchGestureHandler>
+                    </Animated.View>
                 </PanGestureHandler>
             </View>
                     
@@ -135,21 +146,22 @@ useEffect(()=>{
   :
   (
     <View style={styles.container}>
-
         <View style={styles.Showcontainer}>
             <View style={styles.userImageContainer}>   
-              <Image style={styles.userFaceImage} source={{uri:img.image}}/>   
+                <Image style={styles.userFaceImage} source={{uri:img.image}}/>   
+                {/* 헤어스타일에 대한 사진 클릭시 배경에 사진 띄우기*/}
                {/* 헤어스타일에 대한 사진 클릭시 배경에 사진 띄우기*/}
                <PanGestureHandler onGestureEvent={handleGesture1} onHandlerStateChange={_onHandlerStateChange}>
-                    
+                    <Animated.View style={styles.wrapper}>
+                        <PinchGestureHandler onGestureEvent={handleGesture2} onHandlerStateChange={_onGestureStateChange}>
                             <Animated.Image style={[styles.hairTrans,TransformStyle]}  source={{uri:Hair}}/>
-                        
+                        </PinchGestureHandler>
+                    </Animated.View>
                 </PanGestureHandler>
             </View>
                     
             <View style={styles.cateContainer}>
                 <View style={styles.otherImageContainer}>
-                    
                     <TouchableOpacity onPress={() => navigation.navigate('SimulCamera')}>
                     <Image style={styles.otherImageimage} source={image}/>
                     <Text style={styles.otherImageText}>다른 사진</Text>
@@ -244,33 +256,41 @@ const styles = StyleSheet.create({
         backgroundColor:"#F6F6F6",
         borderRadius:20,
         width: 63,
-        height: 28,
+        height: 30,
         marginLeft:9,
-        marginTop:8
+        marginTop:10,
+        borderWidth:1.7,
+        borderColor:"#bbbbbb"
     },
     longButton:{
         backgroundColor:"#F6F6F6",
         borderRadius:20,
         width: 63,
-        height: 28,
+        height: 30,
         marginLeft:9,
-        marginTop:8
+        marginTop:10,
+        borderWidth:1.7,
+        borderColor:"#bbbbbb"
     },
     mediumButton:{
         backgroundColor:"#F6F6F6",
         borderRadius:20,
         width: 63,
-        height: 28,
+        height: 30,
         marginLeft:9,
-        marginTop:8
+        marginTop:10,
+        borderWidth:1.7,
+        borderColor:"#bbbbbb"
     },
     shortButton:{
         backgroundColor:"#F6F6F6",
         borderRadius:20,
         width: 63,
-        height: 28,
+        height: 30,
         marginLeft:9,
-        marginTop:8
+        marginTop:10,
+        borderWidth:1.7,
+        borderColor:"#bbbbbb"
         
     },
     allText:{
@@ -312,24 +332,28 @@ const styles = StyleSheet.create({
         width: 68,
         height: 68,
         marginLeft:11,
-        marginTop:7
+        marginTop:10,
+        borderRadius:8,
+        borderWidth:1.7,
+        borderColor:"#bbbbbb"
     },
     hairImage1:{marginLeft:8},
     hairImage2:{},
     hairText:{
-        fontSize:12,
+        fontSize:13,
         marginLeft:9,
-        marginTop:3,
+        marginTop:5,
         textAlign:"center",
         color:"#ffffff"
     },
     hairTrans:{
-        position : "absolute", right: 30, bottom:20 , width: 300, height: 400, alignSelf:'center', borderWidth:1, borderColor:"#FF0000"
+        position : "absolute", right: 30, bottom:20 , width: 300, height: 400, alignSelf:'center', borderWidth:1, borderColor:"#FF0000",borderRadius:20
     },
       wrapper: {
         ...StyleSheet.absoluteFillObject,
       },
       modalView: {
+        marginTop:100,
         margin: 20,
         backgroundColor: "white",
         borderRadius: 20,
@@ -352,11 +376,8 @@ const styles = StyleSheet.create({
         padding: 10,
         elevation: 2
       },
-      buttonOpen: {
-        backgroundColor: "#F194FF",
-      },
       buttonClose: {
-        backgroundColor: "#2196F3",
+        backgroundColor: "#F194FF",
       },
       textStyle: {
         color: "white",
