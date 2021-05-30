@@ -11,42 +11,58 @@ var options = {
 
 exports.type = function(req, res) {
     console.log('사진 저장')
+    fs.unlink(`../serverbackup/images/uploads/test.jpg`)
     var img = Buffer.from(req.body.imgsource, 'base64');
-    fs.writeFile('../serverbackup/facelib/test.jpg', img, function(error){
-        if(error){
-            throw error;
-        } else{
-            console.log('File created from base64 string!');
-            py_Shell.PythonShell.run("Mid_Demo.py", options, function(err,results){  
-                if(err) console.log('err msg : ', err);
-                results = 'round' // 머신러닝으로 클래스 분류가 끝나면 제거
-                db.query(
-                    `UPDATE user set facetype = '${results}' where user_id =${req.body.user_id};`,
-                    (err, rows, fields) => {
-                        if(err){
-                            res.status(300).send({state: "error"});
-                        } else {
-                            console.log('send data')
-                            res.status(200).send({state: "ok"});
-                        }
-                    }      
-                )
-            });
-        }
-    })
+    setTimeout(() => {
+        fs.writeFile('../serverbackup/facelib/test.jpg', img, function(error){
+            if(error){
+                throw error;
+            } else{
+                console.log('File created from base64 string!');
+                py_Shell.PythonShell.run("Mid_Demo.py", options, function(err,results){  
+                    if(err) {
+                        console.log('err msg : error in running python');
+                    } 
+                    else {
+                        console.log(results)
+                        db.query(
+                            `UPDATE user set facetype = '${results}' where user_id =${req.body.user_id};`,
+                            (err, rows, fields) => {
+                                if(err){
+                                    res.status(300).send({state: "error"});
+                                } else {
+                                    console.log('send data')
+                                    res.status(200).send({state: "ok"});
+                                }
+                            }      
+                        )
+                    }
+                })
+            }
+        })
+    }, 2000)
 }
 
 exports.face = function(req, res) {
     db.query(
         `select facetype FROM user where user_id =${req.body.user_id};`,
         (err, rows, fields) => {
-            console.log(rows)
+            //console.log(rows)
             res.send(rows[0])
         }      
     )
 }
 
 exports.photo = function(req, res) {
-    console.log(`https://hairdoctor.owlsogul.com/uploads/test.jpg`)
-    res.send( {uri :`https://hairdoctor.owlsogul.com/uploads/test.jpg`});
+    console.log(`ML result img return to client`)
+    fs.readdir('../serverbackup/images/uploads', function(err, filelist){
+        console.log('filelist:', filelist)
+        if(filelist[0] == null){
+            console.log('no file')
+            res.send( {uri :`https://hairdoctor.owlsogul.com/component/noimage.png`});
+        }
+        else {
+            res.send( {uri :`https://hairdoctor.owlsogul.com/uploads/test.jpg`});
+        }
+    })
 }
