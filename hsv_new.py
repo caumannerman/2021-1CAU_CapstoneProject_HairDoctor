@@ -50,10 +50,11 @@ def Get_dots_between_dotdot2(dot1,dot2,num_of_dots_to_get):
 
 
 # 원본 color image
-image_ba = cv2.imread("testImage4ContourDetection/.jpeg")
+image_ba = cv2.imread("testImage4ContourDetection/10.png")
 
 
-
+# 명도, 채도 조절하여 얼굴 가생이쪽도 contour에 잘 잡히도록 처리할 것
+hsvimage = cv2.cvtColor(image_ba, cv2.COLOR_BGR2HSV)
 
 
 #Change channel BGR to RGB
@@ -93,6 +94,7 @@ dot27_center_y = 0
 
 # new_poly를 만들 떄 사용할 0번, 16, 27번 (미간), 턱중앙 8
 dot1_x, dot1_y, dot15_x, dot15_y, dot27_x, dot27_y, dot8_x, dot8_y = 0,0,0,0,0,0,0,0
+dot0_x, dot0_y, dot16_x, dot16_y = 0,0,0,0
 
 for face in faces:
     x1 = face.left()
@@ -110,6 +112,8 @@ for face in faces:
 
     # new_poly에 사용할 점들 위치정보 초기화
     dot0_x, dot0_y = landmarks.part(0).x, landmarks.part(0).y
+    dot1_x, dot1_y = landmarks.part(1).x, landmarks.part(1).y
+    dot15_x, dot15_y = landmarks.part(15).x, landmarks.part(15).y
     dot16_x, dot16_y = landmarks.part(16).x, landmarks.part(16).y
     dot27_x, dot27_y = landmarks.part(27).x, landmarks.part(27).y
     dot8_x, dot8_y = landmarks.part(8).x, landmarks.part(8).y
@@ -317,9 +321,54 @@ new_poly[:dot16_y,dot8_x:] = image_for_e_gray[:dot16_y,dot8_x:]
 '''
 new_poly_contours, _ = cv2.findContours(new_poly, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 new_poly_contour = new_poly_contours[0]
+
+
+#############################hsv image S, V  변경하는 부분 ###########################################
+# np 연산으로 각 픽셀의 s,v 요소에 숫자를 더해 만약 255가 넘어가게 된다면, 자동적으로 300-> 45 400-> 145 와 같이 mod연산이 적용되므로,
+# for 문을 이용해 255를 넘어가는 값들은 255로 저장해준다.
+
+
+#hsvimage[:,:,2]  = ( ( hsvimage[:,:,2] + 30 ) // 255 ) * 255 +np.logical_not( ( hsvimage[:,:,2] + 30 ) // 255 ) * ( hsvimage[:,:,2] + 30 )
+#hsvimage[:,:,1]  = ( ( hsvimage[:,:,1] + 30 ) // 255 ) * 255 +np.logical_not( ( hsvimage[:,:,1] + 30 ) // 255 ) * ( hsvimage[:,:,1] + 30 )
+
+for i in range( hsvimage.shape[0]):
+    for j in range( hsvimage.shape[1]):
+        # for S
+        temp = hsvimage[i][j][1] + 30
+        # for V
+        temp2= hsvimage[i][j][2] + 50
+
+        if temp > 255:
+            hsvimage[i][j][1] = 255
+        else:
+            hsvimage[i][j][1] = temp
+        if temp2 > 255:
+            hsvimage[i][j][2] = 255
+        else:
+            hsvimage[i][j][2] = temp2
+
+#hsvimage[:,:,1] +=  123
+#hsvimage[:,:,2] +=  123
+print(np.max(hsvimage[:,:,1]), np.max(hsvimage[:,:,2]))
+#hsvimage[:,:,2]  =  (np.logical_and( ( hsvimage[:,:,2] + 30 ) // 255 , ( hsvimage[:,:,2] + 30 ) // 255 ) )* 255 + np.logical_not( ( hsvimage[:,:,2] + 30 ) // 255 ) * ( hsvimage[:,:,2] + 30 )
+
+
+hsv2rbg = cv2.cvtColor(hsvimage, cv2.COLOR_HSV2RGB)
+plt.imshow(hsv2rbg)
+
+plt.show()
+#############################hsv image S, V  변경하는 부분 ###########################################
+
+
+
+nebu = cv2.pointPolygonTest(new_poly_contour, (  dot1_x, dot1_y),False )
+cv2.circle(image_ba,  (  dot1_x + 10, dot1_y), 3, (255, 100,255), -1)
+print(nebu, "kkkkkkkkkk")
+print("nownow")
+
 print(new_poly_contour.shape, "hhhheheheheheh")
 
-# 1.05배 키워서 적
+# 1.05배 키워서 적용
 new_poly_contour = Magnify_based_on_CenterGravity(new_poly_contour, 1.05)
 testpo = np.zeros_like(gray)
 cv2.drawContours(image_ba, new_poly_contour, -1, (255,255,0), 1)
@@ -366,16 +415,6 @@ print("hehe",cv2.matchShapes(temptemp,image_for_e_gray,cv2.CONTOURS_MATCH_I1,0.0
 # 유사도 검사 - 출력되는 float값이 0에 가까울수록 유사한 것. 아예 똑같으면 0.0 나옴.
 # 입력 매개변수로는, contour, 혹은 gray(1 channel) image가 와야한다. 위의 Ellipse는 타원을 그릴 최소한의 정보만 있으므로, gray스케일 이미지로 전
 print(cv2.matchShapes(image_for_e_ima_gray,image_for_e_gray,cv2.CONTOURS_MATCH_I1,0.0))
-print(cv2.matchShapes(image_for_e_ima_gray,image_for_e_gray,cv2.CONTOURS_MATCH_I2,0.0))
-print(cv2.matchShapes(image_for_e_ima_gray,image_for_e_gray,cv2.CONTOURS_MATCH_I3,0.0))
-print(cv2.matchShapes(image_for_e_gray,image_for_e_gray,cv2.CONTOURS_MATCH_I1,0.0))
-print(cv2.matchShapes(image_for_e_gray,image_for_e_gray,cv2.CONTOURS_MATCH_I2,0.0))
-print(cv2.matchShapes(image_for_e_ima_gray,image_for_e_ima_gray,cv2.CONTOURS_MATCH_I3,0.0))
-
-
-
-
-
 
 
 
