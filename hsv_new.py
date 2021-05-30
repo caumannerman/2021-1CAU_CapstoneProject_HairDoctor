@@ -236,30 +236,11 @@ dots_for_smaller_result = np.rint( temp + ( dots_ima - temp)*0.92)
 
 dots_for_smaller_result = dots_for_smaller_result.astype('int64')
 
-################################### mask 칠해주는 곳 ######################################
-
-
-##################################### 눈썹 mask 칠해주는 곳#######################################
-
-#왼쪽 눈
-Draw_Ellipse_Magnified_based_on_CenterGravity(gray,dots_all[36:42], 1.5)
-#오른쪽 눈
-Draw_Ellipse_Magnified_based_on_CenterGravity(gray,dots_all[42:48], 1.5)
-
-#콧구멍
-Draw_Ellipse_Magnified_based_on_CenterGravity(gray,dots_all[31:36], 2)
-
-#입
-Draw_Ellipse_Magnified_based_on_CenterGravity(gray,dots_all[48:61], 1.2)
-
-#눈썹
-
-cv2.fillPoly(gray, [dots_ima[17:22]],255)
-cv2.fillPoly(gray, [dots_ima[22:]],255)
+### 원래 마스크 칠하는 위치 ##
 
 
 
-# 얼굴에 근사한 타원
+# ----------------첫 번쨰 도형  얼굴에 근사한 타원 -------------------------------
 ellipse = cv2.fitEllipse(dots_17)
 # ellipse는 contour가 아니다. ((355.3381042480469, 119.45784759521484), (145.539306640625, 222.42593383789062), 12.467681884765625)
 # 형태가 위와 같다. 타원을그리기 위한 최소한의 정보만 갖고있다.
@@ -327,25 +308,35 @@ new_poly_contour = new_poly_contours[0]
 # np 연산으로 각 픽셀의 s,v 요소에 숫자를 더해 만약 255가 넘어가게 된다면, 자동적으로 300-> 45 400-> 145 와 같이 mod연산이 적용되므로,
 # for 문을 이용해 255를 넘어가는 값들은 255로 저장해준다.
 
+# 명도, 채도를 올릴 윤곽의 상한선
+new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.05)
+# 명도, 채도를 올릴 윤곽의 하한
+new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.1)
+
 
 #hsvimage[:,:,2]  = ( ( hsvimage[:,:,2] + 30 ) // 255 ) * 255 +np.logical_not( ( hsvimage[:,:,2] + 30 ) // 255 ) * ( hsvimage[:,:,2] + 30 )
 #hsvimage[:,:,1]  = ( ( hsvimage[:,:,1] + 30 ) // 255 ) * 255 +np.logical_not( ( hsvimage[:,:,1] + 30 ) // 255 ) * ( hsvimage[:,:,1] + 30 )
-
+print(hsvimage.shape)
 for i in range( hsvimage.shape[0]):
     for j in range( hsvimage.shape[1]):
-        # for S
-        temp = hsvimage[i][j][1] + 30
-        # for V
-        temp2= hsvimage[i][j][2] + 50
+        # cv2에서는 y축과 x 축의 순서를 바꿔야함 ( plt와 반대)
+        # 작은 윤곽의 외부, 큰 윤곽의 내부면
+        if cv2.pointPolygonTest(new_poly_contour_small, (  j,i),False ) == -1.0 and cv2.pointPolygonTest(new_poly_contour_big, (  j,i),False ) == 1.0:
 
-        if temp > 255:
-            hsvimage[i][j][1] = 255
-        else:
-            hsvimage[i][j][1] = temp
-        if temp2 > 255:
-            hsvimage[i][j][2] = 255
-        else:
-            hsvimage[i][j][2] = temp2
+            # for S
+            temp = hsvimage[i][j][1] + 30
+            # for V
+            temp2= hsvimage[i][j][2] + 50
+
+            if temp > 255:
+                hsvimage[i][j][1] = 255
+            else:
+                hsvimage[i][j][1] = temp
+            if temp2 > 255:
+                hsvimage[i][j][2] = 255
+            else:
+                hsvimage[i][j][2] = temp2
+
 
 #hsvimage[:,:,1] +=  123
 #hsvimage[:,:,2] +=  123
@@ -353,20 +344,35 @@ print(np.max(hsvimage[:,:,1]), np.max(hsvimage[:,:,2]))
 #hsvimage[:,:,2]  =  (np.logical_and( ( hsvimage[:,:,2] + 30 ) // 255 , ( hsvimage[:,:,2] + 30 ) // 255 ) )* 255 + np.logical_not( ( hsvimage[:,:,2] + 30 ) // 255 ) * ( hsvimage[:,:,2] + 30 )
 
 
+
 hsv2rbg = cv2.cvtColor(hsvimage, cv2.COLOR_HSV2RGB)
 plt.imshow(hsv2rbg)
 
 plt.show()
-#############################hsv image S, V  변경하는 부분 ###########################################
 
+#############################hsv image S, V  변경하는 부분  끝 ###########################################
 
+################################### 새롭게 mask 칠해주는 곳 위치 ######################################
 
-nebu = cv2.pointPolygonTest(new_poly_contour, (  dot1_x, dot1_y),False )
-cv2.circle(image_ba,  (  dot1_x + 10, dot1_y), 3, (255, 100,255), -1)
-print(nebu, "kkkkkkkkkk")
-print("nownow")
+gray = cv2.cvtColor(hsv2rbg, cv2.COLOR_RGB2GRAY)
 
-print(new_poly_contour.shape, "hhhheheheheheh")
+#왼쪽 눈
+Draw_Ellipse_Magnified_based_on_CenterGravity(gray,dots_all[36:42], 1.5)
+#오른쪽 눈
+Draw_Ellipse_Magnified_based_on_CenterGravity(gray,dots_all[42:48], 1.5)
+
+#콧구멍
+Draw_Ellipse_Magnified_based_on_CenterGravity(gray,dots_all[31:36], 2)
+
+#입
+Draw_Ellipse_Magnified_based_on_CenterGravity(gray,dots_all[48:61], 1.2)
+
+#눈썹
+
+cv2.fillPoly(gray, [dots_ima[17:22]],255)
+cv2.fillPoly(gray, [dots_ima[22:]],255)
+
+############################################################################################################
 
 # 1.05배 키워서 적용
 new_poly_contour = Magnify_based_on_CenterGravity(new_poly_contour, 1.05)
@@ -410,7 +416,7 @@ cv2.ellipse(temptemp,ellipse, 255,2)
 
 
 
-print("hehe",cv2.matchShapes(temptemp,image_for_e_gray,cv2.CONTOURS_MATCH_I1,0.0))
+
 
 # 유사도 검사 - 출력되는 float값이 0에 가까울수록 유사한 것. 아예 똑같으면 0.0 나옴.
 # 입력 매개변수로는, contour, 혹은 gray(1 channel) image가 와야한다. 위의 Ellipse는 타원을 그릴 최소한의 정보만 있으므로, gray스케일 이미지로 전
