@@ -53,11 +53,16 @@ def Get_dots_between_dotdot2(dot1,dot2,num_of_dots_to_get):
 
 
 
-filepath = 'testing_set/Heart/'
+filepath = 'N_FaceShapeDataset/N_Oval/'
 onlyfiles = listdir(filepath)
-
+#print(len(onlyfiles))
+#print(onlyfiles[0][-3:-1])
+#exit()
 
 for nowfnumber in range(len(onlyfiles)):
+    print(nowfnumber)
+    if onlyfiles[nowfnumber][-3:-1] != "jp" and onlyfiles[nowfnumber][-3:-1] != "pn":
+        continue
     image_ba = cv2.imread(filepath+onlyfiles[nowfnumber])
 
 
@@ -585,4 +590,4 @@ for nowfnumber in range(len(onlyfiles)):
 
     #print(minimum_loss_contour3.shape)
 
-    cv2.imwrite("hh"+str(nowfnumber)+".jpg",minimum_loss_contour3)
+    cv2.imwrite("Oval"+str(nowfnumber)+".jpg",minimum_loss_contour3)
