@@ -1,6 +1,8 @@
 var db = require('../lib/db');
 const fs = require('fs')
 
+const noimage = 'https://hairdoctor.owlsogul.com/component/noimage.png'
+
 exports.showAll = async(data, res, next) => {
     sql = `SELECT comu.community_id as idx, comu.facetype as category, comu.author as user_id, u.nickname as username,
     t.name as userFaceshape, comu.content as userCommunityText, comu.picture AS picture,
@@ -47,7 +49,7 @@ exports.addcontent = function(req, res, next){
     else {
         console.log('There is no image');
         db.query(
-            `INSERT INTO community(facetype, author, content) VAlUE('${req.body.facetype}', ${req.body.user_id}, '${req.body.content}');`,
+            `INSERT INTO community(facetype, author, content, picture) VAlUE('${req.body.facetype}', ${req.body.user_id}, '${req.body.content}', '${noimage}');`,
             (err, rows, fields) => {
                 if(err){
                     res.status(300).send({ state: "error" });

@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require('passport')
 const KakaoStrategy = require('passport-kakao').Strategy;
 const db = require('../lib/db');
+var config = require('../config');
 
 router.use(passport.initialize())
 router.use(passport.session())
@@ -54,8 +55,8 @@ function socialLogin(info, done) {
   }
 
 passport.use(new KakaoStrategy({
-    clientID: '227ec81b33dc2714d100464c04ea9cde',
-    clientSecret: 'wE6qTUQOzrTw7CKdv9VgrRbv40H2ShAM',
+    clientID: config.client.clientID,
+    clientSecret: config.client.clientSecret,
     callbackURL: 'https://hairdoctor.owlsogul.com/auth/kakao/callback/', 
   }, async (accessToken, refreshToken, profile, done) => {
         var _profile = profile._json;
