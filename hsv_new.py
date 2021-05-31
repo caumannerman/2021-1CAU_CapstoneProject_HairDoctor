@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import dlib
 import copy
+import glob
+from os import listdir
+from os.path import isfile, join
 
 def contourIntersect(original_image, point_1, point_6, point_9, point_12, contour):
     # Two separate contours trying to check intersection on
@@ -49,8 +52,18 @@ def Get_dots_between_dotdot2(dot1,dot2,num_of_dots_to_get):
     return Get_dots_between_dotdot((new_dot1_x,new_dot1_y), dot2, num_of_dots_to_get)
 
 
+
+#filepath = 'testing_set/Heart/'
+#onlyfiles = listdir(filepath)
+
+
+#for nowfnumber in range(len(onlyfiles)):
+
+    #image_ba = cv2.imread(filepath+onlyfiles[nowfnumber])
+
+
 # 원본 color image
-image_ba = cv2.imread("testImage4ContourDetection/10.png")
+image_ba = cv2.imread("N_FaceShapeDataset/N_Round/cir3.png")
 
 
 # 명도, 채도 조절하여 얼굴 가생이쪽도 contour에 잘 잡히도록 처리할 것
@@ -311,7 +324,7 @@ new_poly_contour = new_poly_contours[0]
 # 명도, 채도를 올릴 윤곽의 상한선
 new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.05)
 # 명도, 채도를 올릴 윤곽의 하한
-new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.1)
+new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.9)
 
 
 #hsvimage[:,:,2]  = ( ( hsvimage[:,:,2] + 30 ) // 255 ) * 255 +np.logical_not( ( hsvimage[:,:,2] + 30 ) // 255 ) * ( hsvimage[:,:,2] + 30 )
@@ -557,16 +570,56 @@ plt.title("final_contour by loss3")
 
 final_image = cv2.cvtColor(image_ba,cv2.COLOR_BGR2RGB)
 
-if cv2.contourArea(final_contour) > cv2.contourArea(final_contour2):
+#if cv2.contourArea(final_contour) > cv2.contourArea(final_contour2):
 
-    cv2.drawContours(final_image,final_contour,-1,(0,255,0),1)
-    plt.subplot(236)
-    plt.imshow(final_image)
-    plt.title("final")
-else:
-    cv2.drawContours(final_image, final_contour2, -1, (0, 255, 0), 1)
-    plt.subplot(236)
-    plt.imshow(final_image)
-    plt.title("final")
+#    cv2.drawContours(final_image,final_contour,-1,(0,255,0),1)
+#    plt.subplot(236)
+#    plt.imshow(final_image)
+#    plt.title("final")
+#else:
+#    cv2.drawContours(final_image, final_contour2, -1, (0, 255, 0), 1)
+#    plt.subplot(236)
+#    plt.imshow(final_image)
+#    plt.title("final")
 
+# 1.05 Magnifiy한 도형과 0.9 Magnify한 도형 사이에 있는 윤곽만 남기고 버려주는 부분 ( contour와, 그것이 그려진 binary 이미지 둘 모두 해줘야함)
+print(minimum_loss_contour3.shape)
+# nXm 형태 2차원 배열임
+print(final_contour3.shape)
+
+##### contour가 그려진 최종 binary image에서 , 1.05 Magnifiy한 도형과 0.9 Magnify한 도형 사이에 있는 윤곽만 남기고 버려주는 부분
+#for i in range(minimum_loss_contour3.shape[0]):
+#    if np.sum(minimum_loss_contour3[i]) == 0:
+#        continue
+#    for j in range(minimum_loss_contour3.shape[1]):
+        # cv2에서는 y축과 x 축의 순서를 바꿔야함 ( plt와 반대)
+        # 작은 윤곽의 외부, 큰 윤곽의 내부면
+#        if minimum_loss_contour3[i][j] != 0:
+
+#            if cv2.pointPolygonTest(new_poly_contour_small, (j,i), False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big, (j, i), False) == -1.0:
+#                minimum_loss_contour3[i][j] = 0
+
+print(final_contour3.shape)
+idx_to_del = []
+for i in range(final_contour3.shape[0]):
+    final_coutour3_x = final_contour3[i][0][0]
+    final_contour3_y = final_contour3[i][0][1]
+    if cv2.pointPolygonTest(new_poly_contour_small, (final_coutour3_x, final_contour3_y), False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big,(final_coutour3_x, final_contour3_y),False) == -1.0:
+        idx_to_del.append(i)
+
+num_to_del = len(idx_to_del)
+idx_to_del.reverse()
+# 큰 인덱스부터 거꾸로 들어오며 삭제
+for i in idx_to_del:
+    final_contour3 = np.delete(final_contour3, i,axis = 0)
+
+print(final_contour3.shape, "new")
+cv2.drawContours(final_image,final_contour3,-1,(0,255,0),1)
+plt.subplot(236)
+plt.imshow(final_image)
+plt.title("final")
 plt.show()
+
+
+
+#cv2.imwrite("hh"+str(nowfnumber)+".jpg",minimum_loss_contour3)
