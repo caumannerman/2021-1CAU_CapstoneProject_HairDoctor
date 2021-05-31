@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-export default function LoadingPage() {
+export default function FaceLoading() {
  
   
     return (

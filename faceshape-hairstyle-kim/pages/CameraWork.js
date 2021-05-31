@@ -32,7 +32,7 @@ export default function CameraWork({navigation}) {
       return true
     }
     
-    takeImage = async () => {
+    const takeImage = async () => {
       // make sure that we have the permission
       const hasPermission = await askForPermission()
       if (!hasPermission) {
@@ -67,7 +67,7 @@ export default function CameraWork({navigation}) {
       }
     }
   
-   pickImage = async () => {
+    const pickImage = async () => {
       // make sure that we have the permission
       const hasPermission = await askForPermission()
       if (!hasPermission) {

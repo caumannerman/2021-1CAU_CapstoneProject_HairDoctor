@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
         color:"#ffffff",
         flexDirection:"row",
         borderBottomColor:"#c4c4c4",
-        borderBottomWidth:7,
+        borderBottomWidth:5,
         padding:5
     },
     usericonLayout:{

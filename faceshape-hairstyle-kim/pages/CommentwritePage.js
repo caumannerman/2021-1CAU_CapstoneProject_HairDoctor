@@ -60,7 +60,23 @@ useEffect(() => {
 //route.params에 이미지 데이터가 있을때 없을때 ,,,
 return img == undefined ? (
     <View style={styles.container}>
-        <TouchableOpacity  onPress={() => alert("등록" + value)} onPress={() => navigation.navigate('헤닥톡')}><Text style={styles.registerButton}>등록</Text></TouchableOpacity>
+        <TouchableOpacity  onPress={() =>{         
+               fetch('https://hairdoctor.owlsogul.com/community/addcontent', {
+               method: 'POST',
+               headers: {
+               Accept: 'application/json',
+               'Content-Type': 'application/json',
+            },
+            // send our base64 string as POST request
+            body: JSON.stringify({
+               user_id: userID,
+               facetype: userFacetype,
+               content: value
+            }),
+           })
+
+           navigation.navigate('헤닥톡')
+         }} ><Text style={styles.registerButton}>등록</Text></TouchableOpacity>
 
         <View style={styles.commentContainer}>
           <View

@@ -1,12 +1,9 @@
 import React,{useEffect,useRef,useState,Component} from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Keyboard } from 'react-native';
 import happy from "../images/happy.png"
-import userface from "../images/userface.png"
 import like from "../images/like.png"
 import commenticon from "../images/comment.png"
 import CommentCard from '../components/CommentCard';
-//원래 서버에서 받아오는 데이터를 json형식으로 예로 듬
-import commentEx from '../commentEx.json';
 import axios from "axios"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -64,11 +61,10 @@ const [value, onChangeText] = React.useState('');
             let data = route.params;
             setData(data)
             CommentData();
-
         },1000)
     },[commentState])
 
-
+   
 //댓글들을 idx로 걸르자,,
 let exex = commentState
 const filteredData = exex.filter(exex => exex.community_id == data.idx)
@@ -88,9 +84,7 @@ const filteredData = exex.filter(exex => exex.community_id == data.idx)
                     <Text style={styles.userCommunityText}>{data.userCommunityText}</Text>
                 </View> 
                 <View style={styles.communityFunc}>
-                    <TouchableOpacity onPress={() =>axios.post(`https://hairdoctor.owlsogul.com/community/deletecontent`, {
-                                    idx : data.idx
-                                    }) }><Image style={styles.likeIcon} source={like}/></TouchableOpacity>
+                    <Image style={styles.likeIcon} source={like}/>
                     <Text style={styles.likeNum}>{data.likeNum}</Text>
                     <Image style={styles.commentIcon} source={commenticon}/>
                     <Text style={styles.commentNum}>{data.commentNum}</Text>
@@ -135,7 +129,7 @@ const filteredData = exex.filter(exex => exex.community_id == data.idx)
                 user_id : ID,
                 commentText:value
             }),
-           }),console.log(ID)
+           }),Keyboard.dismiss()
          }} ><Text style={styles.commentregister}>등록</Text></TouchableOpacity>
         </View>
     </View>

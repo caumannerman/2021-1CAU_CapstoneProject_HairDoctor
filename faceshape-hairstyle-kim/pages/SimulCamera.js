@@ -25,7 +25,7 @@ export default function SimulCamera({navigation}) {
          let image = await ImagePicker.launchCameraAsync({
            mediaTypes: ImagePicker.MediaTypeOptions.Images,
            allowsEditing: true,
-           aspect: [3, 3],
+           aspect: [3, 4],
            quality: 1,
            base64: true,
          }).catch(error => console.log({ error }));
@@ -48,7 +48,7 @@ export default function SimulCamera({navigation}) {
          let pickimage = await ImagePicker.launchImageLibraryAsync({
            mediaTypes: ImagePicker.MediaTypeOptions.Images,
            allowsEditing: true,
-           aspect: [3, 3],
+           aspect: [3, 4],
            quality: 1,
            base64: true,
          })

@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios"
 import facetypeEx from '../facetype.json';
 import FaceLoading from './FaceLoading';
+import FaceErrorPage from './FaceErrorPage';
 export default function FacePage({navigation,route}) {
     LogBox.ignoreAllLogs();
 
@@ -35,33 +36,32 @@ const [ready,setReady] = useState(true)
 
     const userImage = img.uri +"?cache="+Math.random()
 
-
     useEffect(() => {
-        getUserId();
 
         setTimeout(()=>{
+            getUserId();
             getUserImage();
             setReady(false)
-        },4000)
+        },10000)
 
      },[]);
 
     const userfacetype = state.facetype
-    //console.log(userfacetype)
+    console.log(userfacetype)
 
-  
     //2.facetype.json와 같은 얼굴형으로 화면 나타내기
     let data = facetypeEx.data//facetype.json 
 
+    
     const filteredData = data.filter(data => data.type == userfacetype)
     const facetitle=filteredData[0].facetitle
     const faceDesc=filteredData[0].faceDesc
     const faceDescText=filteredData[0].faceDescText
-//
+  
 
-
- return ready ? <FaceLoading/> : (
-    <View style={styles.container}>
+ return ready ? <FaceLoading/> : (    
+     userfacetype=="error" ? <FaceErrorPage navigation={navigation}/> : (
+     <View style={styles.container}>
         <View style={styles.faceContainer}>
             
             <Image style={styles.userFaceImage} source={{uri:userImage}}/>
@@ -80,6 +80,7 @@ const [ready,setReady] = useState(true)
         </View> 
         
     </View>
+     )
   );
 }
 

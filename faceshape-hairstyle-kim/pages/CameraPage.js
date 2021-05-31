@@ -4,13 +4,6 @@ import happy from "../images/happy.png"
 import confused from "../images/confused.png"
 import sad from "../images/sad.png"
 import plus from "../images/plus.png"
-import image from "../images/image.png"
-import show from "../images/show.png"
-import user from "../images/user.png"
-import community from "../images/community.png"
-import {Camera} from 'expo-camera'
-import * as Permissions from 'expo-permissions';
-import * as MediaLibrary from 'expo-media-library';
 
 export default function CameraPage({navigation}) {
     
