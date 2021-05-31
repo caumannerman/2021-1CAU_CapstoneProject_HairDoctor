@@ -1,10 +1,9 @@
 import React, { Component,useEffect,useRef,useState} from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Animated, LogBox } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Animated, LogBox, Alert, Modal, Pressable } from 'react-native';
 import  {PanGestureHandler,PinchGestureHandler,State} from 'react-native-gesture-handler'
 import image from "../images/image.png"
-import expand from "../images/expand.png"
-import userface from "../images/userface.png"
-import SimulHairCard from '../components/SimulHairCard';
+import size from "../images/size.png"
+import drag from "../images/drag.png"
 import data from '../simulHair.json';
 import { useIsFocused } from '@react-navigation/native';
 const tag ='[GESTURE]'
@@ -89,10 +88,37 @@ export default function SimulatorPage ({navigation,route}) {
             { translateX : translateX }
         ]
     }
+
+    const [modalVisible, setModalVisible] = useState(true);
+
     return img == undefined ? (
         <View style={styles.container}>
             <View style={styles.Showcontainer}>
-                <View style={styles.userImageContainer}>  
+                <View style={styles.userImageContainer}> 
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                    Alert.alert("Modal has been closed.");
+                    setModalVisible(!modalVisible);
+                    }}
+                >
+                    <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <Image style={styles.hairImage1} source={drag}/>
+                        <Text style={styles.modalText}>한 손가락으로 드래그를 해주세요.</Text>
+                        <Image style={styles.hairImage2} source={size}/>
+                        <Text style={styles.modalText}>두 손가락으로 크기조정을 해주세요.</Text>
+                        <TouchableOpacity
+                        style={[styles.button, styles.buttonClose]}
+                        onPress={() => setModalVisible(!modalVisible)}
+                        >
+                        <Text style={styles.textStyle}>창 닫기</Text>
+                        </TouchableOpacity>
+                    </View>
+                    </View>
+                </Modal> 
                     <Image style={styles.userFaceImage} source={{uri:"https://previews.123rf.com/images/backwoodsicon/backwoodsicon2005/backwoodsicon200500329/148299034-healthy-skin-line-black-icon-beautiful-girl-isolated-vector-element-outline-pictogram-for-web-page-m.jpg"}}/>   
                
                 {/* 헤어스타일에 대한 사진 클릭시 배경에 사진 띄우기*/}
@@ -147,7 +173,31 @@ export default function SimulatorPage ({navigation,route}) {
   (
     <View style={styles.container}>
         <View style={styles.Showcontainer}>
-            <View style={styles.userImageContainer}>   
+            <View style={styles.userImageContainer}>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                setModalVisible(!modalVisible);
+                }}
+            >
+                <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                    <Image style={styles.hairImage1} source={drag}/>
+                    <Text style={styles.modalText}>한 손가락으로 드래그를 해주세요.</Text>
+                    <Image style={styles.hairImage2} source={size}/>
+                    <Text style={styles.modalText}>두 손가락으로 크기조정을 해주세요.</Text>
+                    <TouchableOpacity
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => setModalVisible(!modalVisible)}
+                    >
+                    <Text style={styles.textStyle}>창 닫기</Text>
+                    </TouchableOpacity>
+                </View>
+                </View>
+            </Modal>   
                 <Image style={styles.userFaceImage} source={{uri:img.image}}/>   
                 {/* 헤어스타일에 대한 사진 클릭시 배경에 사진 띄우기*/}
                {/* 헤어스타일에 대한 사진 클릭시 배경에 사진 띄우기*/}
@@ -347,7 +397,8 @@ const styles = StyleSheet.create({
         color:"#ffffff"
     },
     hairTrans:{
-        position : "absolute", right: 30, bottom:20 , width: 300, height: 400, alignSelf:'center', borderWidth:1, borderColor:"#FF0000",borderRadius:20
+        position : "absolute", right: 30, bottom:20 , width: 300, height: 400, alignSelf:'center'
+        //, borderWidth:1, borderColor:"#FF0000",borderRadius:20
     },
       wrapper: {
         ...StyleSheet.absoluteFillObject,
