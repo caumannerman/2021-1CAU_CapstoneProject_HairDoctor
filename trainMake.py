@@ -625,9 +625,9 @@ for nowfnumber in range(len(onlyfiles)):
     #print(final_contour3.shape, "new")
     cv2.drawContours(final_image, final_contour3, -1, (0, 255, 0), 1)
     #plt.subplot(236)
-    plt.imshow(final_image)
-    plt.title("final")
-    plt.show()
+    #plt.imshow(final_image)
+    #plt.title("final")
+    #plt.show()
 
 
     # 이 크기 규격을 유지하면서, 잡은 윤곽을 확대 ,축소하여 총 5장 저장할 것
@@ -652,7 +652,7 @@ for nowfnumber in range(len(onlyfiles)):
     train4 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.88)
     train5 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.79)
     train6 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.7)
-
+    # 정해준 사이즈가 512 x 512 이므로, image_width 자리에 512를 넣어줌
     train1 = move_contour_to_lefttop_of_image(512, train1)
     train2 = move_contour_to_lefttop_of_image(512, train2)
     train3 = move_contour_to_lefttop_of_image(512, train3)
@@ -662,7 +662,7 @@ for nowfnumber in range(len(onlyfiles)):
 
     # 얼굴형 폴더 바뀌면 여기 수정해야함
     now_shape = "egg"
-
+    '''
     cv2.drawContours(train_result,train1,  -1, 255, 1)
     cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) +"1"+ ".jpg", train_result)
     for  i in range(512):
@@ -672,12 +672,12 @@ for nowfnumber in range(len(onlyfiles)):
     cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) +"2"+ ".jpg", train_result)
     for i in range(512):
         train_result[i] = 0
-
+    '''
     cv2.drawContours(train_result, train3, -1, 255, 1)
     cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) + "3" + ".jpg", train_result)
     for i in range(512):
         train_result[i] = 0
-
+    '''
     cv2.drawContours(train_result, train4, -1, 255, 1)
     cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) + "4" + ".jpg", train_result)
     for i in range(512):
@@ -691,4 +691,4 @@ for nowfnumber in range(len(onlyfiles)):
     cv2.drawContours(train_result, train6, -1, 255, 1)
     cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape+ str(nowfnumber) + "6" + ".jpg", train_result)
 
-
+    '''
