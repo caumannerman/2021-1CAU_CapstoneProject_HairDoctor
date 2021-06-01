@@ -6,6 +6,7 @@ import copy
 import glob
 from os import listdir
 from os.path import isfile, join
+from PIL import Image, ImageOps
 
 def contourIntersect(original_image, point_1, point_6, point_9, point_12, contour):
     # Two separate contours trying to check intersection on
@@ -53,14 +54,14 @@ def Get_dots_between_dotdot2(dot1,dot2,num_of_dots_to_get):
 
 
 
-filepath = 'N_FaceShapeDataset/N_Oval/'
+filepath = 'N_FaceShapeDataset/N_Dia/'
 onlyfiles = listdir(filepath)
 #print(len(onlyfiles))
 #print(onlyfiles[0][-3:-1])
 #exit()
 
 for nowfnumber in range(len(onlyfiles)):
-    print(nowfnumber)
+    print(onlyfiles[nowfnumber])
     if onlyfiles[nowfnumber][-3:-1] != "jp" and onlyfiles[nowfnumber][-3:-1] != "pn":
         continue
     image_ba = cv2.imread(filepath+onlyfiles[nowfnumber])
@@ -574,20 +575,108 @@ for nowfnumber in range(len(onlyfiles)):
 
     final_image = cv2.cvtColor(image_ba,cv2.COLOR_BGR2RGB)
 
-    if cv2.contourArea(final_contour) > cv2.contourArea(final_contour2):
+    #if cv2.contourArea(final_contour) > cv2.contourArea(final_contour2):
 
-        cv2.drawContours(final_image,final_contour,-1,(0,255,0),1)
+    #    cv2.drawContours(final_image,final_contour,-1,(0,255,0),1)
         #plt.subplot(236)
         #plt.imshow(final_image)
         #plt.title("final")
-    else:
-        cv2.drawContours(final_image, final_contour2, -1, (0, 255, 0), 1)
+    #else:
+    #    cv2.drawContours(final_image, final_contour2, -1, (0, 255, 0), 1)
         #plt.subplot(236)
         #plt.imshow(final_image)
         #plt.title("final")
 
-    #plt.show()
 
     #print(minimum_loss_contour3.shape)
+    # 1.05 Magnifiy한 도형과 0.9 Magnify한 도형 사이에 있는 윤곽만 남기고 버려주는 부분 ( contour와, 그것이 그려진 binary 이미지 둘 모두 해줘야함)
+    #print(minimum_loss_contour3.shape)
+    # nXm 형태 2차원 배열임
+    #print(final_contour3.shape)
 
-    cv2.imwrite("Oval"+str(nowfnumber)+".jpg",minimum_loss_contour3)
+    ##### contour가 그려진 최종 binary image에서 , 1.05 Magnifiy한 도형과 0.9 Magnify한 도형 사이에 있는 윤곽만 남기고 버려주는 부분
+    for i in range(minimum_loss_contour3.shape[0]):
+        if np.sum(minimum_loss_contour3[i]) == 0:
+            continue
+        for j in range(minimum_loss_contour3.shape[1]):
+    # cv2에서는 y축과 x 축의 순서를 바꿔야함 ( plt와 반대)
+    # 작은 윤곽의 외부, 큰 윤곽의 내부면
+            if minimum_loss_contour3[i][j] != 0:
+
+                if cv2.pointPolygonTest(new_poly_contour_small, (j,i), False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big, (j, i), False) == -1.0:
+                    minimum_loss_contour3[i][j] = 0
+
+    #print(final_contour3.shape)
+
+    # 얼굴일 가능성이 없는 것 지우는 부분 (contour)에서
+    idx_to_del = []
+    for i in range(final_contour3.shape[0]):
+        final_coutour3_x = final_contour3[i][0][0]
+        final_contour3_y = final_contour3[i][0][1]
+        if cv2.pointPolygonTest(new_poly_contour_small, (final_coutour3_x, final_contour3_y),
+                                False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big,
+                                                                      (final_coutour3_x, final_contour3_y),
+                                                                      False) == -1.0:
+            idx_to_del.append(i)
+
+    num_to_del = len(idx_to_del)
+    idx_to_del.reverse()
+    # 큰 인덱스부터 거꾸로 들어오며 삭제
+    for i in idx_to_del:
+        final_contour3 = np.delete(final_contour3, i, axis=0)
+
+    print(final_contour3.shape, "new")
+    cv2.drawContours(final_image, final_contour3, -1, (0, 255, 0), 1)
+    #plt.subplot(236)
+    plt.imshow(final_image)
+    plt.title("final")
+    plt.show()
+
+
+    # 이 크기 규격을 유지하면서, 잡은 윤곽을 확대 ,축소하여 총 5장 저장할 것
+    train_result = np.zeros((512,512))
+
+    #size = (512, 512)
+    #minimum_loss_contour3 = ImageOps.fit(minimum_loss_contour3, size, Image.ANTIALIAS)
+    #train = cv2.resize(minimum_loss_contour3, (512, 512), interpolation=cv2.INTER_CUBIC)
+    #print(minimum_loss_contour3.shape)
+
+    train1 = Magnify_conotur_based_on_CenterGravity(final_contour3, 1.3)
+    train2 = Magnify_conotur_based_on_CenterGravity(final_contour3, 1.13)
+    train3 = final_contour3
+    train4 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.88)
+    train5 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.79)
+    train6 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.7)
+
+    # 얼굴형 폴더 바뀌면 여기 수정해야함
+    now_shape = "rhombus"
+
+    cv2.drawContours(train_result,train1,  -1, 255, 1)
+    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) +"1"+ ".jpg", train_result)
+    for  i in range(512):
+        train_result[i] = 0
+
+    cv2.drawContours(train_result, train2, -1, 255, 1)
+    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) +"2"+ ".jpg", train_result)
+    for i in range(512):
+        train_result[i] = 0
+
+    cv2.drawContours(train_result, train3, -1, 255, 1)
+    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) + "3" + ".jpg", train_result)
+    for i in range(512):
+        train_result[i] = 0
+
+    cv2.drawContours(train_result, train4, -1, 255, 1)
+    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) + "4" + ".jpg", train_result)
+    for i in range(512):
+        train_result[i] = 0
+
+    cv2.drawContours(train_result, train5, -1, 255 , 1)
+    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) + "5" + ".jpg", train_result)
+    for i in range(512):
+        train_result[i] = 0
+
+    cv2.drawContours(train_result, train6, -1, 255, 1)
+    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape+ str(nowfnumber) + "6" + ".jpg", train_result)
+
+
