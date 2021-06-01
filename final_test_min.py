@@ -217,19 +217,19 @@ new_poly_contours, _ = cv2.findContours(new_poly, cv2.RETR_TREE, cv2.CHAIN_APPRO
 new_poly_contour = new_poly_contours[0]
 
 
-new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.05)
+new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.08)
 
-new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.95)
+new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.1)
 
-
+new_poly_contour_mid = Magnify_based_on_CenterGravity(new_poly_contour, 0.9)
 for i in range( hsvimage.shape[0]):
     for j in range( hsvimage.shape[1]):
         if cv2.pointPolygonTest(new_poly_contour_small, (  j,i),False ) == -1.0 and cv2.pointPolygonTest(new_poly_contour_big, (  j,i),False ) == 1.0:
 
             temp = hsvimage[i][j][1] + 30
             temp2= hsvimage[i][j][2] + 50
-            if i > dot16_y:
-                temp2 += 50
+            if cv2.pointPolygonTest(new_poly_contour_mid, (  j,i),False ) == -1.0:
+                temp2 += 80
             if temp > 255:
                 hsvimage[i][j][1] = 255
             else:
@@ -335,6 +335,37 @@ cv2.drawContours(final_image, final_contour3, -1, (0, 255, 0), 1)
 cv2.imwrite("finalImage.jpg",final_image)
 
 
+# image_length라고 하나의 매개변수만 있는 것은, 우리가 224x224 크기로 분류이미지를 구성할 것이기 때문
+def Magnify_contour_to_fit_in_centertop_of_image(image_length, contarr):
+    cont_x_max = int(np.max(contarr[:, 0, 0]))
+    cont_x_min = int(np.min(contarr[:, 0, 0]))
+
+
+    cont_y_max = int(np.max(contarr[:, 0, 1]))
+    cont_y_min = int(np.min(contarr[:, 0, 1]))
+
+    x_length = cont_x_max - cont_x_min
+    y_length = cont_y_max - cont_y_min
+
+    max_xy_length = max(x_length, y_length)
+
+    if max_xy_length > image_length:
+        # result는 축소된 contour다
+        result = Magnify_conotur_based_on_CenterGravity(contarr, image_length / (max_xy_length + 10) )
+        result_x_mean = int(np.mean(result[:, 0, 0]))
+        result_y_min = int(np.min(result[:, 0, 1])) - 15
+        tempp = np.array([[result_x_mean - (image_length // 2), result_y_min]])
+
+        result = result - tempp
+        return result
+    else:
+        result_x_mean = int(np.mean(contarr[:, 0, 0]))
+        result_y_min = int(np.min(contarr[:, 0, 1])) - 15
+        tempp = np.array([[result_x_mean - (image_length // 2), result_y_min]])
+
+        result = contarr - tempp
+        return result
+
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
 
@@ -344,7 +375,9 @@ model = tensorflow.keras.models.load_model('keras_model.h5')
 data = np.ndarray(shape=(1, 224, 224,3), dtype=np.float32)
 
 image_array = np.zeros((224,224))
-cv2.drawContours(image_array, final_contour3, -1, 255, 1)
+final_fit_contour = Magnify_contour_to_fit_in_centertop_of_image(224,final_contour3)
+
+cv2.drawContours(image_array, final_fit_contour, -1, 255, 1)
 
 # Normalize the image
 normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
