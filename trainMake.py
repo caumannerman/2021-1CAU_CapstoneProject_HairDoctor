@@ -638,7 +638,7 @@ for nowfnumber in range(len(onlyfiles)):
     #train = cv2.resize(minimum_loss_contour3, (512, 512), interpolation=cv2.INTER_CUBIC)
     #print(minimum_loss_contour3.shape)
     # binary 사진을 그려줄 때, image의 중앙 상단에 위치할 수 있도록 ( magnify된 contour가 그림 밖에 그려지는 경우를 막기 위함)
-    def move_contour_to_lefttop_of_image(image_width,contarr):
+    def move_contour_to_centertop_of_image(image_width,contarr):
         cont_x_mean = int(np.mean(contarr[:, 0, 0]))
         cont_y_min = int(np.min(contarr[:, 0, 1])) - 30
         tempp = np.array([[cont_x_mean - (image_width//2) , cont_y_min]])
@@ -653,12 +653,12 @@ for nowfnumber in range(len(onlyfiles)):
     train5 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.79)
     train6 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.7)
     # 정해준 사이즈가 512 x 512 이므로, image_width 자리에 512를 넣어줌
-    train1 = move_contour_to_lefttop_of_image(512, train1)
-    train2 = move_contour_to_lefttop_of_image(512, train2)
-    train3 = move_contour_to_lefttop_of_image(512, train3)
-    train4 = move_contour_to_lefttop_of_image(512, train4)
-    train5 = move_contour_to_lefttop_of_image(512, train5)
-    train6 = move_contour_to_lefttop_of_image(512, train6)
+    train1 = move_contour_to_centertop_of_image(512, train1)
+    train2 = move_contour_to_centertop_of_image(512, train2)
+    train3 = move_contour_to_centertop_of_image(512, train3)
+    train4 = move_contour_to_centertop_of_image(512, train4)
+    train5 = move_contour_to_centertop_of_image(512, train5)
+    train6 = move_contour_to_centertop_of_image(512, train6)
 
     # 얼굴형 폴더 바뀌면 여기 수정해야함
     now_shape = "egg"
