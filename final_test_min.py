@@ -217,9 +217,9 @@ new_poly_contours, _ = cv2.findContours(new_poly, cv2.RETR_TREE, cv2.CHAIN_APPRO
 new_poly_contour = new_poly_contours[0]
 
 
-new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.1)
+new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.05)
 
-new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.85)
+new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.95)
 
 
 for i in range( hsvimage.shape[0]):
@@ -228,7 +228,8 @@ for i in range( hsvimage.shape[0]):
 
             temp = hsvimage[i][j][1] + 30
             temp2= hsvimage[i][j][2] + 50
-
+            if i > dot16_y:
+                temp2 += 50
             if temp > 255:
                 hsvimage[i][j][1] = 255
             else:
@@ -344,8 +345,6 @@ data = np.ndarray(shape=(1, 224, 224,3), dtype=np.float32)
 
 image_array = np.zeros((224,224))
 cv2.drawContours(image_array, final_contour3, -1, 255, 1)
-
-
 
 # Normalize the image
 normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
