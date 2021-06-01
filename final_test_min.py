@@ -1,13 +1,9 @@
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import dlib
 import copy
-import glob
-from os import listdir
-from os.path import isfile, join
 import tensorflow.keras
-from PIL import Image, ImageOps
+
 
 
 def contourIntersect(original_image, point_1, point_6, point_9, point_12, contour):
