@@ -217,9 +217,9 @@ new_poly_contours, _ = cv2.findContours(new_poly, cv2.RETR_TREE, cv2.CHAIN_APPRO
 new_poly_contour = new_poly_contours[0]
 
 
-new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.05)
+new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.1)
 
-new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.1)
+new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.85)
 
 
 for i in range( hsvimage.shape[0]):
