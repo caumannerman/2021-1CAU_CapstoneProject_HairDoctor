@@ -21,7 +21,7 @@ export default function CameraPage({navigation}) {
                     <Image style={styles.image1} source={happy}/>
                     <View style={styles.descCard1}>
                     <Text style={styles.desc1}>사진은 정면으로!</Text>
-                    <Text style={styles.descText1} numberOfLines={2}>얼굴형 분석을 위해 정면으로 사진을 찍어주세요.</Text>
+                    <Text style={styles.descText1} numberOfLines={2}>얼굴형 분석을 위해 정면으로 어깨 위 얼굴만 사진을 찍어주세요.</Text>
                     </View>
                 </View>
                 <View style={styles.descContainer2}>
