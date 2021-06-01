@@ -4,8 +4,6 @@ import dlib
 import copy
 import tensorflow.keras
 
-
-
 def contourIntersect(original_image, point_1, point_6, point_9, point_12, contour):
 
     blank = np.zeros(original_image.shape[0:2])
@@ -41,7 +39,7 @@ def Get_dots_between_dotdot2(dot1,dot2,num_of_dots_to_get):
     new_dot1_y = dot1[1] + inter_y
     return Get_dots_between_dotdot((new_dot1_x,new_dot1_y), dot2, num_of_dots_to_get)
 
-image_ba = cv2.imread("testImage4ContourDetection/2.jpeg")
+image_ba = cv2.imread("testImage4ContourDetection/1.jpeg")
 
 hsvimage = cv2.cvtColor(image_ba, cv2.COLOR_BGR2HSV)
 
@@ -214,8 +212,6 @@ new_poly[:lt_x,:dot8_x] = image_for_e_gray[:lt_x,:dot8_x]
 new_poly[rt_x:,dot8_x:] = poly_by_27dots[rt_x:,dot8_x:]
 new_poly[:rt_x,dot8_x:] = image_for_e_gray[:rt_x,dot8_x:]
 
-cv2.circle(image_ba, ( lt_y,lt_x), 3, (255, 255, 100), -1)
-cv2.circle(image_ba, ( rt_y, rt_x), 3, (255, 255, 100), -1)
 
 new_poly_contours, _ = cv2.findContours(new_poly, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 new_poly_contour = new_poly_contours[0]
@@ -257,7 +253,7 @@ cv2.fillPoly(gray, [dots_ima[22:]],255)
 
 new_poly_contour = Magnify_based_on_CenterGravity(new_poly_contour, 1.05)
 testpo = np.zeros_like(gray)
-cv2.drawContours(image_ba, new_poly_contour, -1, (255,255,0), 1)
+
 
 
 temptemp = np.zeros_like(gray)
@@ -306,8 +302,8 @@ for i in range(254):
 
 
 
-final_image = cv2.cvtColor(image_ba,cv2.COLOR_BGR2RGB)
-
+#final_image = cv2.cvtColor(image_ba,cv2.COLOR_BGR2RGB)
+final_image = copy.deepcopy(image_ba)
 for i in range(minimum_loss_contour3.shape[0]):
     if np.sum(minimum_loss_contour3[i]) == 0:
         continue
@@ -323,10 +319,7 @@ idx_to_del = []
 for i in range(final_contour3.shape[0]):
     final_coutour3_x = final_contour3[i][0][0]
     final_contour3_y = final_contour3[i][0][1]
-    if cv2.pointPolygonTest(new_poly_contour_small, (final_coutour3_x, final_contour3_y),
-                            False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big,
-                                                                  (final_coutour3_x, final_contour3_y),
-                                                                  False) == -1.0:
+    if cv2.pointPolygonTest(new_poly_contour_small, (final_coutour3_x, final_contour3_y),False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big,(final_coutour3_x, final_contour3_y),False) == -1.0:
         idx_to_del.append(i)
 
 num_to_del = len(idx_to_del)
@@ -371,5 +364,5 @@ label = np.where(prediction[0] == np.max(prediction[[0]]))
 label = label[0][0]
 
 ll = ["heart", "peanut", "round", "egg", "rhombus"]
-
+print(prediction)
 print(ll[label])
