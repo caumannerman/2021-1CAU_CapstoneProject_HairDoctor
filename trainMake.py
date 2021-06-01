@@ -54,7 +54,7 @@ def Get_dots_between_dotdot2(dot1,dot2,num_of_dots_to_get):
 
 
 
-filepath = 'N_FaceShapeDataset/N_Dia/'
+filepath = 'N_FaceShapeDataset/N_Oval/'
 onlyfiles = listdir(filepath)
 #print(len(onlyfiles))
 #print(onlyfiles[0][-3:-1])
@@ -481,9 +481,6 @@ for nowfnumber in range(len(onlyfiles)):
 
         _, binary = cv2.threshold(gray, thres, 255, cv2.THRESH_BINARY_INV)
 
-
-
-
         # find the contours from the thresholded image
         contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
@@ -625,7 +622,7 @@ for nowfnumber in range(len(onlyfiles)):
     for i in idx_to_del:
         final_contour3 = np.delete(final_contour3, i, axis=0)
 
-    print(final_contour3.shape, "new")
+    #print(final_contour3.shape, "new")
     cv2.drawContours(final_image, final_contour3, -1, (0, 255, 0), 1)
     #plt.subplot(236)
     plt.imshow(final_image)
@@ -640,16 +637,31 @@ for nowfnumber in range(len(onlyfiles)):
     #minimum_loss_contour3 = ImageOps.fit(minimum_loss_contour3, size, Image.ANTIALIAS)
     #train = cv2.resize(minimum_loss_contour3, (512, 512), interpolation=cv2.INTER_CUBIC)
     #print(minimum_loss_contour3.shape)
+    # binary 사진을 그려줄 때, image의 중앙 상단에 위치할 수 있도록 ( magnify된 contour가 그림 밖에 그려지는 경우를 막기 위함)
+    def move_contour_to_lefttop_of_image(image_width,contarr):
+        cont_x_mean = int(np.mean(contarr[:, 0, 0]))
+        cont_y_min = int(np.min(contarr[:, 0, 1])) - 30
+        tempp = np.array([[cont_x_mean - (image_width//2) , cont_y_min]])
 
-    train1 = Magnify_conotur_based_on_CenterGravity(final_contour3, 1.3)
+        nowresult = contarr - tempp
+        return nowresult
+
+    train1 = Magnify_conotur_based_on_CenterGravity(final_contour3, 1.26)
     train2 = Magnify_conotur_based_on_CenterGravity(final_contour3, 1.13)
     train3 = final_contour3
     train4 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.88)
     train5 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.79)
     train6 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.7)
 
+    train1 = move_contour_to_lefttop_of_image(512, train1)
+    train2 = move_contour_to_lefttop_of_image(512, train2)
+    train3 = move_contour_to_lefttop_of_image(512, train3)
+    train4 = move_contour_to_lefttop_of_image(512, train4)
+    train5 = move_contour_to_lefttop_of_image(512, train5)
+    train6 = move_contour_to_lefttop_of_image(512, train6)
+
     # 얼굴형 폴더 바뀌면 여기 수정해야함
-    now_shape = "rhombus"
+    now_shape = "egg"
 
     cv2.drawContours(train_result,train1,  -1, 255, 1)
     cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) +"1"+ ".jpg", train_result)
