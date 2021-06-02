@@ -60,8 +60,8 @@ onlyfiles = listdir(filepath)
 #print(onlyfiles[0][-3:-1])
 #exit()
 
-for nowfnumber in range(len(onlyfiles)):
-    print(onlyfiles[nowfnumber])
+for nowfnumber in range(101,len(onlyfiles)):
+    print(filepath + onlyfiles[nowfnumber])
     if onlyfiles[nowfnumber][-3:-1] != "jp" and onlyfiles[nowfnumber][-3:-1] != "pn":
         continue
     image_ba = cv2.imread(filepath+onlyfiles[nowfnumber])
@@ -329,8 +329,8 @@ for nowfnumber in range(len(onlyfiles)):
     # 명도, 채도를 올릴 윤곽의 상한선
     new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.05)
     # 명도, 채도를 올릴 윤곽의 하한
+    new_poly_contour_mid = Magnify_based_on_CenterGravity(new_poly_contour, 0.9)
     new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.1)
-
 
     #hsvimage[:,:,2]  = ( ( hsvimage[:,:,2] + 30 ) // 255 ) * 255 +np.logical_not( ( hsvimage[:,:,2] + 30 ) // 255 ) * ( hsvimage[:,:,2] + 30 )
     #hsvimage[:,:,1]  = ( ( hsvimage[:,:,1] + 30 ) // 255 ) * 255 +np.logical_not( ( hsvimage[:,:,1] + 30 ) // 255 ) * ( hsvimage[:,:,1] + 30 )
@@ -397,79 +397,19 @@ for nowfnumber in range(len(onlyfiles)):
     testpo = np.zeros_like(gray)
     cv2.drawContours(image_ba, new_poly_contour, -1, (255,255,0), 1)
 
-    #----------------------- 만든 도형들 확인  --------------  -------------------------------
-    #plt.figure(figsize = (12,12))
-    #plt.subplot(141)
 
-    #plt.imshow(image)
-
-    #plt.subplot(142)
-    #plt.imshow(image_for_e_gray, cmap='gray')
-
-    #plt.subplot(143)
-    #plt.imshow(image_for_e_ima_gray,cmap='gray')
-
-    #plt.subplot(144)
-    #plt.imshow(poly_by_27dots,cmap='gray')
-    #plt.show()
-    ############################################################################################################
-
-    # 새롭게 만든 도형 Plot 하는 부분
-    #plt.figure(figsize = (8,8))
-    #plt.subplot(121)
-    #plt.imshow(new_poly, cmap='gray')
-
-    #plt.subplot(122)
-    #plt.imshow(image_ba)
-    #plt.show()
-
-
-    ############################################################################################################
-
-    #image_for_e_gray = cv2.cvtColor(image_for_e, cv2.COLOR_RGB2GRAY)
-    #image_for_e_ima_gray = cv2.cvtColor(image_for_e_ima, cv2.COLOR_RGB2GRAY)
     temptemp = np.zeros_like(gray)
     cv2.ellipse(temptemp,ellipse, 255,2)
 
 
 
-
-
-
-    # 유사도 검사 - 출력되는 float값이 0에 가까울수록 유사한 것. 아예 똑같으면 0.0 나옴.
-    # 입력 매개변수로는, contour, 혹은 gray(1 channel) image가 와야한다. 위의 Ellipse는 타원을 그릴 최소한의 정보만 있으므로, gray스케일 이미지로 전
-    #print(cv2.matchShapes(image_for_e_ima_gray,image_for_e_gray,cv2.CONTOURS_MATCH_I1,0.0))
-
-
-
-
-    # threshold = 문지방 ==> 특정 값 이하들면 어떤 값으로 보내고, / 특정 값 이상이면 어떤 값으로 보내고 ==> gray scale이후에 써야
-    # cv2.threshold(gray이미지, 픽셀문턱값, 적용값(최대혹은 최소 - flag에 따라 다름), flag)
-
-    # BINARY - 크면 value, 작으면0 // BINARY_INV - 크면0, 작으면 value // TRUNC - 크면 문턱값, 작으면 그대로 //
-    # TOZERO - 크면 그대로, 작으면 0 //  TOZERO_INV - 크면 0, 작으면 그대
-
-    #plt.subplot(111)
-    #plt.imshow(gray, cmap='gray')
-    #plt.title('gray scale')
-    #plt.show()
-    ####################################################################################################
-    #############################          threshold 지정해주는 부분          ##############################
-    ####################################################################################################
-
-    ####### 1. 원본의 gray scaling image를 binary로 바꾸고, (문턱값 이용)
-    ####### 2. binary 이미지에서 모든 contour를 갖고와서 contours array 에 넣는 것 까지가 이 단락의 역할.
-
     learning_rate = 1
-    loss = int(1e9)
-    loss_2 = int(1e9)
+
     loss_3 = int(1e9)
-    minimum_loss_contour = np.zeros_like(gray)
-    minimum_loss_contour2 = np.zeros_like(gray)
+
     minimum_loss_contour3 = np.zeros_like(gray)
-    final_contour = []
-    final_contour2 = []
-    final_contour3 = []
+
+    final_contour3 = np.array([])
     binary = []
     # 문턱값의 시작 값을 3번 점과 7번 점의 중간점의 픽셀값으로 설정
     #thres = gray[(dots17[2][0] + dots17[6][0]) //2][( dots17[2][1] + dots17[6][1]) // 2 ]
@@ -521,77 +461,19 @@ for nowfnumber in range(len(onlyfiles)):
                         #plt.imshow(now_face_contour,cmap='gray')
                         #plt.show()
 
-
-
-                        loss1 = cv2.matchShapes(contour, ell_contour, cv2.CONTOURS_MATCH_I3, 0.0)
-                        loss2 = cv2.matchShapes(contour, poly_27_contour, cv2.CONTOURS_MATCH_I3, 0.0)
                         loss3 = cv2.matchShapes(contour, new_poly_contour, cv2.CONTOURS_MATCH_I3, 0.0)
                         #print(loss1, loss2, "total = ", loss1 + loss2)
 
-                        if loss >  loss1 + loss2 :
-                            loss = loss1 + loss2
-                            minimum_loss_contour = now_face_contour
-                            final_contour = contour
-                        if loss_2 > loss1:
-                            loss_2 = loss1
-                            minimum_loss_contour2 = now_face_contour
-                            final_contour2 = contour
+
                         if loss_3 > loss3:
                             loss_3 = loss3
                             minimum_loss_contour3 = now_face_contour
                             final_contour3 = contour
-                        #plt.axis("off")
-                        #plt.imshow(image)
-                        #plt.show()
 
-
-
-    #print(type(contours))
-    #print(len(contours), len(contours[0]), len(contours[1][0][0]),contours[1][0][0].shape, type(contours[1][0][0]))
-    #plt.figure(figsize=(16,16))
-
-    #plt.subplot(231)
-    #plt.imshow(image)
-    #plt.title('result')
-
-    #plt.subplot(232)
-    #plt.imshow(minimum_loss_contour, cmap='gray')
-    #plt.title("final_contour by loss1")
-
-    #plt.subplot(233)
-    #plt.imshow(gray, cmap='gray')
-    #plt.title("gray")
-
-    #plt.subplot(234)
-    #plt.imshow(minimum_loss_contour2, cmap='gray')
-    #plt.title("final_contour by loss2")
-
-    #plt.subplot(235)
-    #plt.imshow(minimum_loss_contour3, cmap='gray')
-    #plt.title("final_contour by loss3")
 
     final_image = cv2.cvtColor(image_ba,cv2.COLOR_BGR2RGB)
 
-    #if cv2.contourArea(final_contour) > cv2.contourArea(final_contour2):
 
-    #    cv2.drawContours(final_image,final_contour,-1,(0,255,0),1)
-        #plt.subplot(236)
-        #plt.imshow(final_image)
-        #plt.title("final")
-    #else:
-    #    cv2.drawContours(final_image, final_contour2, -1, (0, 255, 0), 1)
-        #plt.subplot(236)
-        #plt.imshow(final_image)
-        #plt.title("final")
-
-
-    #print(minimum_loss_contour3.shape)
-    # 1.05 Magnifiy한 도형과 0.9 Magnify한 도형 사이에 있는 윤곽만 남기고 버려주는 부분 ( contour와, 그것이 그려진 binary 이미지 둘 모두 해줘야함)
-    #print(minimum_loss_contour3.shape)
-    # nXm 형태 2차원 배열임
-    #print(final_contour3.shape)
-
-    ##### contour가 그려진 최종 binary image에서 , 1.05 Magnifiy한 도형과 0.9 Magnify한 도형 사이에 있는 윤곽만 남기고 버려주는 부분
     for i in range(minimum_loss_contour3.shape[0]):
         if np.sum(minimum_loss_contour3[i]) == 0:
             continue
@@ -600,7 +482,7 @@ for nowfnumber in range(len(onlyfiles)):
     # 작은 윤곽의 외부, 큰 윤곽의 내부면
             if minimum_loss_contour3[i][j] != 0:
 
-                if cv2.pointPolygonTest(new_poly_contour_small, (j,i), False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big, (j, i), False) == -1.0:
+                if cv2.pointPolygonTest(new_poly_contour_mid, (j,i), False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big, (j, i), False) == -1.0:
                     minimum_loss_contour3[i][j] = 0
 
     #print(final_contour3.shape)
@@ -610,7 +492,7 @@ for nowfnumber in range(len(onlyfiles)):
     for i in range(final_contour3.shape[0]):
         final_coutour3_x = final_contour3[i][0][0]
         final_contour3_y = final_contour3[i][0][1]
-        if cv2.pointPolygonTest(new_poly_contour_small, (final_coutour3_x, final_contour3_y),
+        if cv2.pointPolygonTest(new_poly_contour_mid, (final_coutour3_x, final_contour3_y),
                                 False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big,
                                                                       (final_coutour3_x, final_contour3_y),
                                                                       False) == -1.0:
@@ -646,49 +528,21 @@ for nowfnumber in range(len(onlyfiles)):
         nowresult = contarr - tempp
         return nowresult
 
-    train1 = Magnify_conotur_based_on_CenterGravity(final_contour3, 1.26)
-    train2 = Magnify_conotur_based_on_CenterGravity(final_contour3, 1.13)
-    train3 = final_contour3
-    train4 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.88)
-    train5 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.79)
-    train6 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.7)
+    train1 = Magnify_conotur_based_on_CenterGravity(final_contour3, 1.2)
+    train2 = Magnify_conotur_based_on_CenterGravity(final_contour3, 0.8)
+
     # 정해준 사이즈가 512 x 512 이므로, image_width 자리에 512를 넣어줌
     train1 = move_contour_to_centertop_of_image(512, train1)
     train2 = move_contour_to_centertop_of_image(512, train2)
-    train3 = move_contour_to_centertop_of_image(512, train3)
-    train4 = move_contour_to_centertop_of_image(512, train4)
-    train5 = move_contour_to_centertop_of_image(512, train5)
-    train6 = move_contour_to_centertop_of_image(512, train6)
+
 
     # 얼굴형 폴더 바뀌면 여기 수정해야함
     now_shape = "egg"
-    '''
-    cv2.drawContours(train_result,train1,  -1, 255, 1)
-    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) +"1"+ ".jpg", train_result)
+
+    cv2.drawContours(train_result,train1,  -1, 255, 2)
+    cv2.imwrite("binary/"+now_shape +"/v1_" + now_shape + str(nowfnumber) +"1"+ ".jpg", train_result)
     for  i in range(512):
         train_result[i] = 0
 
-    cv2.drawContours(train_result, train2, -1, 255, 1)
-    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) +"2"+ ".jpg", train_result)
-    for i in range(512):
-        train_result[i] = 0
-    '''
-    cv2.drawContours(train_result, train3, -1, 255, 1)
-    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) + "3" + ".jpg", train_result)
-    for i in range(512):
-        train_result[i] = 0
-    '''
-    cv2.drawContours(train_result, train4, -1, 255, 1)
-    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) + "4" + ".jpg", train_result)
-    for i in range(512):
-        train_result[i] = 0
-
-    cv2.drawContours(train_result, train5, -1, 255 , 1)
-    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape + str(nowfnumber) + "5" + ".jpg", train_result)
-    for i in range(512):
-        train_result[i] = 0
-
-    cv2.drawContours(train_result, train6, -1, 255, 1)
-    cv2.imwrite("binary_traindataset/"+now_shape +"/v1_" + now_shape+ str(nowfnumber) + "6" + ".jpg", train_result)
-
-    '''
+    cv2.drawContours(train_result, train2, -1, 255, 2)
+    cv2.imwrite("binary/"+now_shape +"/v1_" + now_shape + str(nowfnumber) +"2"+ ".jpg", train_result)
