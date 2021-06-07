@@ -14,7 +14,7 @@ exports.show = function(req, res){
     )
 }
 
-exports.test = function(req, res){
+exports.showtest = function(req, res){
     console.log(req.query)
     db.query(
         `SELECT uuid, data AS nickname FROM noti WHERE user_id = '${req.query.user_id}' AND read_at IS NULL ORDER BY created_at;`,

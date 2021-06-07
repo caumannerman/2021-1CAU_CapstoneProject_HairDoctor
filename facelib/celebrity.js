@@ -32,9 +32,8 @@ exports.CeleList = function(req, res){
     )
 }
 
-exports.test = function(req, res){
+exports.returnCele = function(req, res){
     console.log(req.query)
-
     db.query(
         `SELECT c.celebrity_id, c.celebrity_name, c.recommend, c.photo,
         if(c.celebrity_id in( select f.celebrity_id from favorite as f where user_id = ${req.query.user_id}), "true", "false") as pick

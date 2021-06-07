@@ -4,6 +4,36 @@ import dlib
 import copy
 import tensorflow.keras
 
+def Magnify_contour_to_fit_in_centertop_of_image(image_length, contarr):
+    cont_x_max = int(np.max(contarr[:, 0, 0]))
+    cont_x_min = int(np.min(contarr[:, 0, 0]))
+
+
+    cont_y_max = int(np.max(contarr[:, 0, 1]))
+    cont_y_min = int(np.min(contarr[:, 0, 1]))
+
+    x_length = cont_x_max - cont_x_min
+    y_length = cont_y_max - cont_y_min
+
+    max_xy_length = max(x_length, y_length)
+
+    if max_xy_length > image_length:
+        # result는 축소된 contour다
+        result = Magnify_conotur_based_on_CenterGravity(contarr, image_length / (max_xy_length + 10) )
+        result_x_mean = int(np.mean(result[:, 0, 0]))
+        result_y_min = int(np.min(result[:, 0, 1])) - 15
+        tempp = np.array([[result_x_mean - (image_length // 2), result_y_min]])
+
+        result = result - tempp
+        return result
+    else:
+        result_x_mean = int(np.mean(contarr[:, 0, 0]))
+        result_y_min = int(np.min(contarr[:, 0, 1])) - 15
+        tempp = np.array([[result_x_mean - (image_length // 2), result_y_min]])
+
+        result = contarr - tempp
+        return result
+
 def contourIntersect(original_image, point_1, point_6, point_9, point_12, contour):
 
     blank = np.zeros(original_image.shape[0:2])
@@ -217,7 +247,7 @@ new_poly_contours, _ = cv2.findContours(new_poly, cv2.RETR_TREE, cv2.CHAIN_APPRO
 new_poly_contour = new_poly_contours[0]
 
 
-new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.1)
+new_poly_contour_big = Magnify_based_on_CenterGravity(new_poly_contour, 1.03)
 
 new_poly_contour_small = Magnify_based_on_CenterGravity(new_poly_contour, 0.1)
 
@@ -306,22 +336,22 @@ for i in range(254):
 
 final_image = copy.deepcopy(image_ba)
 
-for i in range(minimum_loss_contour3.shape[0]):
-    if np.sum(minimum_loss_contour3[i]) == 0:
-        continue
-    for j in range(minimum_loss_contour3.shape[1]):
-
-        if minimum_loss_contour3[i][j] != 0:
-
-            if cv2.pointPolygonTest(new_poly_contour_small, (j,i), False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big, (j, i), False) == -1.0:
-                minimum_loss_contour3[i][j] = 0
+#for i in range(minimum_loss_contour3.shape[0]):
+#    if np.sum(minimum_loss_contour3[i]) == 0:
+#        continue
+#    for j in range(minimum_loss_contour3.shape[1]):
+#
+#        if minimum_loss_contour3[i][j] != 0:
+#
+#            if cv2.pointPolygonTest(new_poly_contour_small, (j,i), False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big, (j, i), False) == -1.0:
+#                minimum_loss_contour3[i][j] = 0
 
 
 idx_to_del = []
 for i in range(final_contour3.shape[0]):
     final_coutour3_x = final_contour3[i][0][0]
     final_contour3_y = final_contour3[i][0][1]
-    if cv2.pointPolygonTest(new_poly_contour_small, (final_coutour3_x, final_contour3_y),False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big,(final_coutour3_x, final_contour3_y),False) == -1.0:
+    if cv2.pointPolygonTest(new_poly_contour_mid, (final_coutour3_x, final_contour3_y),False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big,(final_coutour3_x, final_contour3_y),False) == -1.0:
         idx_to_del.append(i)
 
 num_to_del = len(idx_to_del)
@@ -345,6 +375,7 @@ model = tensorflow.keras.models.load_model('../serverbackup/facelib/keras_model.
 data = np.ndarray(shape=(1, 224, 224,3), dtype=np.float32)
 
 image_array = np.zeros((224,224))
+final_fit_contour = Magnify_contour_to_fit_in_centertop_of_image(224,final_contour3)
 cv2.drawContours(image_array, final_contour3, -1, 255, 1)
 
 
