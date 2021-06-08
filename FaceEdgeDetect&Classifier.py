@@ -320,7 +320,7 @@ idx_to_del = []
 for i in range(final_contour3.shape[0]):
     final_coutour3_x = final_contour3[i][0][0]
     final_contour3_y = final_contour3[i][0][1]
-    if cv2.pointPolygonTest(new_poly_contour_small, (final_coutour3_x, final_contour3_y),False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big,(final_coutour3_x, final_contour3_y),False) == -1.0:
+    if cv2.pointPolygonTest(new_poly_contour_mid, (final_coutour3_x, final_contour3_y),False) == 1.0 or cv2.pointPolygonTest(new_poly_contour_big,(final_coutour3_x, final_contour3_y),False) == -1.0:
         idx_to_del.append(i)
 
 num_to_del = len(idx_to_del)
@@ -396,5 +396,5 @@ label = np.where(prediction[0] == np.max(prediction[[0]]))
 label = label[0][0]
 
 ll = ["heart", "peanut", "round", "egg", "rhombus"]
-print(prediction)
+
 print(ll[label])
