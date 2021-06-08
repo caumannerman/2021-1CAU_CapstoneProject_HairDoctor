@@ -1,0 +1,44 @@
+{
+    "data":[
+        {
+            "idx":1,
+            "category":"egg",
+            "user_id":"000",
+                "username":"김하나",
+                "userFaceshape": "-계란형",
+                "userCommunityText":"얼굴형 분석 후 계란형으로 나와 추천해주는 레이어드 컷 C컬펌을 시도해 보았습니다. 주변에서 다들 잘 어울린다고 하네요ㅎㅎ. 계란형이신 분들 추천합니다.,,!",
+                "likeNum":"2",
+                "commentNum":"2"
+        },
+        {
+            "idx":2,
+            "category":"diamond",
+            "user_id":"001",
+                "username":"김둘",
+                "userFaceshape": "-마름모형",
+                "userCommunityText":"얼굴형 분석 후 계란형으로 나와 추천해주는 레이어드 컷 C컬펌을 시도해 보았습니다. 주변에서 다들 잘 어울린다고 하네요ㅎㅎ. 계란형이신 분들 추천합니다.,,!",
+                "likeNum":"2",
+                "commentNum":"2"
+        },
+        {
+            "idx":3,
+            "category":"heart",
+            "user_id":"002",
+                "username":"김 셋",
+                "userFaceshape": "-하트형",
+                "userCommunityText":"얼굴형 분석 후 계란형으로 나와 추천해주는 레이어드 컷 C컬펌을 시도해 보았습니다. 주변에서 다들 잘 어울린다고 하네요ㅎㅎ. 계란형이신 분들 추천합니다.,,!",
+                "likeNum":"2",
+                "commentNum":"2"
+        },
+        {
+            "idx":4,
+            "category":"peanut",
+            "user_id":"003",
+                "username":"김 넷",
+                "userFaceshape": "-땅콩형",
+                "userCommunityText":"얼굴형 분석 후 계란형으로 나와 추천해주는 레이어드 컷 C컬펌을 시도해 보았습니다. 주변에서 다들 잘 어울린다고 하네요ㅎㅎ. 계란형이신 분들 추천합니다.,,!",
+                "likeNum":"2",
+                "commentNum":"2"
+        }
+    ]
+}
